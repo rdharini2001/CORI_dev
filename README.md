@@ -33,8 +33,9 @@ CORI_analysis_clean/
 ├── tests/
 ├── pyproject.toml
 ├── requirements.txt
-└── REFACTOR_NOTES.md
 ```
+
+<img src="overview.svg" alt="CORI" width="400">
 
 ## Installation
 
@@ -117,8 +118,6 @@ python scripts/run_mediation.py \
   --n-rep 50
 ```
 
-This replaces the two uploaded mediation scripts, which differed only in output directory, covariate formula, and bootstrap count.
-
 ## Run proteomics
 
 ```bash
@@ -127,11 +126,3 @@ python scripts/run_proteomics.py \
   --protein-columns-file ./data/alz_proteomics_columns.txt
 ```
 
-## Recommended parity check on your machine
-
-1. Keep the original output directory unchanged as a reference.
-2. Run the clean package into a new output directory.
-3. Compare cohort audits, selected feature lists, bundle manifests, risk scores, C-indices, HRs, p-values, and mediation tables.
-4. Only after parity is confirmed, replace the old notebook workflow.
-
-The package includes source-level parity tests, but data-level parity requires the original private datasets and environment.
