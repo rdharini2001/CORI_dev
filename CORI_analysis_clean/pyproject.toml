@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cori-analysis"
+version = "1.0.0"
+description = "Modular CORI, M-MACE, CMR, mediation, handcrafted-retina, and proteomics analyses"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "matplotlib>=3.8",
+  "seaborn>=0.13",
+  "scipy>=1.11",
+  "lifelines>=0.30",
+  "statsmodels>=0.14",
+  "scikit-learn>=1.4",
+  "patsy>=0.5",
+  "tqdm>=4.66",
+  "tableone>=0.9",
+]
+
+[project.optional-dependencies]
+notebooks = ["jupyterlab>=4", "nbformat>=5.10"]
+parquet = ["pyarrow>=15"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["cori_pipeline_utils_v13", "clinical_covariates", "cmr_helper", "handcrafted_features", "performance", "rank_transition_plot", "treatment_analysis", "utils"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"

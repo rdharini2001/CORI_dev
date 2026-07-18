@@ -1,0 +1,126 @@
+{
+  "common.py": {
+    "QCLogger": "03ba10d7caa7ec0bbccf95f48bd79ead34a0d1a88162428f8dd971e8a38e8474",
+    "ensure_dirs": "fd68d39229fa0af17c7a1a4053a78714f86c751da3b158d075d9fd20bbd30ea9",
+    "savefig": "56fede1b2cf4497f133ff16eefcdb2fe93458a8b8240dd9a3290704ffb663fb1",
+    "safe_name": "336bba9a2fc139e58284e347e225d1f0213d17c14397259b336f56ebf080affb",
+    "clean_id": "7c30efb88b6323584a2a825e9e3378121e2622bc979f8f4e78c746e762ef9f55",
+    "load_csv": "d0498042b7d0ece1a3c592f66a6f20be3144bb046c60d7f5d192d7de1d849b0d",
+    "as_numeric": "517b137e195132080d966cc92674f66356629fb20c4d9d7f55144a6679d2656a",
+    "pformat": "c30726a79252aef79ada57f47cdb1f150847f65e2ffa57b099266b1221898a0b",
+    "fmt_ci": "89c8149cbaeee31eb576f1182993add783c293fa9f9042084a7a5a71e3c65ccd"
+  },
+  "cohorts.py": {
+    "discover_feature_cols": "e5840006d1ef53f5b956eea1ffcdcff83bf9b3d80c4ea2e3f16ef0963af7ca6c",
+    "find_center_col": "4c30ab7a9afa6fc007a7dc036f23647a430700066bdda0f8e8e5df81933375d3",
+    "find_first_existing": "8cdb5d6c36c00731eba2b4304c11f62c59f73cf56f963761abfef2d45019c857",
+    "cohort_audit_row": "03b3b089513a752a900945179a05321e35cc59f7be45755e3ab9bfdccbb1e6ee",
+    "build_allcancer_cohort": "c002ccfff23cea6520614638b5657a9cc3b94fe4599fa20b4391cf1cfb212d99",
+    "build_noncancer_ready_cohort": "852397247c65561b5f7f5629daaa1d79c50ba6a68361b0a32c51c3cabc08d758",
+    "make_center_split": "60768a0813dd09d053484d81397b42c01db137c290299ae45c41cccb36175f55",
+    "cancer_subtype_columns": "5d1fcc32e19f8368071d93e51e89a840ab3373f5c53c83e15293cebaff3c85fc",
+    "merge_treatment_labels": "36a15670625abe28601543963dd818fda685d804c2210dae265cc043271e1253",
+    "reshape_cmr_long": "8beeacbf9bebfbecb773c1aa1c447e3d44d3f4b56e0c7b79ed4f0d358e664455",
+    "cmr_feature_cols": "f1689590340a39abf0c1b4e0e03d31c307d6da2a458f115e4e01e38036f0f955"
+  },
+  "survival.py": {
+    "variance_filter": "e2f244cf47b937a0f8b7d9b0aff292ac07c9e20ff6d5f35e6ba08bd79fccea22",
+    "_prepare_design_from_training": "7413bc3280b6e9a2f499051150ec8dd0382f990d815adb9b2cd4d5405b08576e",
+    "prepare_design_with_params": "056e14f5bed14f864e5ac13f028a4bb489a1e81c45fe3e049b4519a8c9341cf6",
+    "fit_cox_model": "8d8000976b48e68bf9369d562fbf67ea9245753590029fb1d21b2bfeeb57410b",
+    "univariate_cox_rank": "570586683ffb50601dd6374c4f6ba14c6ce0fbad2506fd1155b3341cf706bb1e",
+    "internal_cv_choose_k": "c0facf1d3c219fdfd689e3e8635915db6c3a5edbab9887e5d7719ee417c696eb",
+    "train_locked_model": "079f2b003e04969e1e03528ffaef0bf61cf1905352374fb0464f0fe383abf584",
+    "load_model_bundle": "9fd84aadb597da2dfb6852cba918f1d29a03042f3db589eaa49781d913355777",
+    "apply_model_bundle": "901e57b8aaa7b7ff1af0a05249e9c98f017515238d2610c79f1c3379caa8866d",
+    "derive_thresholds": "e1c3091876a6aebdd588e58eea470071925023bcecf0f2c7967e97e341ac104c",
+    "apply_thresholds_from_dict": "66d25f5f4454622e044cae8e393796b35d13cd8485fd8938e0a2b34a69899653"
+  },
+  "evaluation.py": {
+    "bootstrap_cindex": "56b2a402f963ccc872ce45d960ece3c374da96456c0755896110bf7337314e60",
+    "km_hr": "5e355a12964361aa882e3a9482d6b54744af1b6c8a148cb9980995c5f93354e1",
+    "performance_row": "5614275024085853d130f34b7ed1d0de7e5eff6b3f7070e14fd10a25fe0d590d",
+    "horizon_performance": "42356045dc3a30527a6281169acf72545dcfa126dc855a287a588dd9784f37ac",
+    "predict_10yr": "167ed93a9f9c41556310559d49a03f48c1a1abad4af6750c171e980d524415f0",
+    "lrt_interaction": "adf0ae28763519fdb63b2394a4bce760a00b08fb1d8f2113dcf26ba7e060bf24",
+    "risk_tertiles_from_pred": "0f81e72e3d6ac311c4afa399721c17ede09cb7eec408d6d27f8510165dc66b73",
+    "transition_tables": "77655116052f62e56fff6ee069827a7644da777455cfd2cbd1f6b71bbe733e1b",
+    "cmr_analysis_table": "a712600ef6166ce7b6465a4e45925b119190a8fc7f881231131a166360036da3",
+    "adjusted_linear_regressions": "af94576edf254693330ed2931b537e6dc20f1299d6832c15304a16cec3264e26"
+  },
+  "clinical_models.py": {
+    "one_age_covars_htn_diabetes": "884352d45e8e1f9faf707d9ec447065de4d45193a0819b115cc3cfbe0b19be5d",
+    "encode_train_test": "3ece718da81f124682da06f121861c5773eb7cd5cd4663b20660007cb912b242",
+    "train_cox_matrix": "e322c5080ed3a30ff182de27d862a381f9fb57b65ada29e9b91b5045b59ba4f1",
+    "train_clinical_and_stacked": "60ec05c5c8191071c171ed4eaf74cb4aa738304919beef65c18789d78f71665c"
+  },
+  "plots.py": {
+    "plot_km_high_low": "c4e0c89e04f9b5705f95369cb070ab7f65a0aed3354bec411c7420ec68891b61",
+    "plot_km_tertiles": "acb9bbac7eb0b9311b0b61d054b57f7f92e1422d8f7bbd6dca9e41e74b8df49b",
+    "forest_plot": "1731122ae50923504b4eca94e9ab3a2e698cdb8cfbb0aa69578af9249ff5796f",
+    "alluvial_static": "cce97607053e8cec0dffc275992e8e6f108b5dd8249d00bbfee6d8ea6ae21c87",
+    "subgroup_analysis": "54a932bf9a0d8e8d98302241757fbd07bab761b793d9a7b3ed62b78f5def401b",
+    "feature_rank_shift_bump": "9acf86db6cd6133987277cb800bf0c89c1e695224fee94eca4cb8f37de9bc460"
+  },
+  "clinical_data.py": {
+    "find_col": "1a979bd4b33edb78a10af81026480dc5dcb79b54d3a78d323a2b5daefe9c26b3",
+    "clean_binary_col": "3078ed2ef134f22b571a7a3dd17fda6e01323dba6d005fd689f7ba42a5e9b9b4",
+    "load_and_prepare_htn_db": "aa0a8d126b99243d1f9a0aae91ac90a2aa4445cfd81561ccaa1de433a79190ca",
+    "merge_htn_diabetes_status": "61d181e3e5ea12d4a5704a1e5ae8c710cf8f1dec0b8abaa3fc57ca998c05d6c6",
+    "one_age_covars_htn_diabetes": "81b6c17c772dc259816e6ea889879c350d52f813dc258167bd7f5be3f6d2efa3",
+    "choose_adjustment_covars_for_h4_hcori": "f8c900b78c579a007a3a20c56a3ce94d45a9370daa1a0be28dacdef694c8e3b9"
+  },
+  "cmr.py": {
+    "preprocess_cmr_features": "db45b75fade40e3befddd7b4aff52b8a278c91700ebcbe8b3bfa05b4c60e7549",
+    "preprocess_cmr_features_for_hcori": "92c4d0b1102e0f3b16e67af771ab3ffb35539f16bafb37be4ab9bd9c3abe4d90",
+    "_clean_cmr_label_for_matching": "8953f62a82dc8b8f34121edaf7f1f86038192c356ac1c430e8276ce9b2d432e5",
+    "_is_numeric_usable": "1d095daac65ddb953c1f61f79adc186d63370abb8e67c9497421162b625f0791",
+    "classify_cmr_feature": "446a79ee9d0e0d536a1fd021a207d2684718d250698634ba07c85ab4d810d5f7",
+    "build_cmr_variable_inventory": "5c02c64294282e4904491407651874d0b5507f569b7d23b9b1f958e5c61c4a2b"
+  },
+  "handcrafted.py": {
+    "set_logger": "cfac40c383e1968cffe5d166da7a96eb20189bdadffa9e627281ec13f5d3ed65",
+    "_hc_log": "3f0c0daa01328942ad2a4636116c776e0c0b3338aeb8970967e9d6bea0908e7b",
+    "_hc_section": "ea5622feed2a77fb52336922fac549079b4baaa2613f91bad16623f9c664102f",
+    "_hc_pformat": "9fc37f6c14a2e2fdf59cb5beff8b46faaf83b337664a53ea7eec1a96e1781685",
+    "_hc_fmt_ci": "71c3c2dba6eaf465c8c7f0d9532d9049caaf8fda264b27b2c26f2cda0ee54eb9",
+    "_hc_safe_name": "590b558b71e87103ff05703a96c4841950768edac80a438851e468fe5c7e46b9",
+    "_hc_extract_subject_id_from_filename": "2b1d1556520a414bfa7d6c25c3fe92da4891562ffc13377d472d64d0c7d36463",
+    "load_handcrafted_features": "f9dfa77a4878d4dc9b46bfdc2775905b6076825ff2dad765d462ba35233a3984",
+    "merge_handcrafted": "526be1cf11b0be0b8f06ccf632f97c6fc141218cb1649756a2d933cfd31025de",
+    "merge_handcrafted_cached_safe": "36a9aa3b7f209c85a1fac39924674f566a89ef9a1657da4b845a8cdd108f077d",
+    "discover_handcrafted_cols": "e9f902d45c257e9d5a714f685203caf5a9e679fa554aa11758f302cb82d452d8",
+    "prepare_hc_matrix": "cf0a3a823edcc33500b48155d199ec5a931db6a85cdd33c87157a3e7369b48eb",
+    "univariate_cox_rank_hc": "89f154250b9e7d311e3d61b70e55b491f2aebc412e7767656640936b60bcc2a2",
+    "_hc_cindex": "fc1c46459789e84ffbb6267717d04f55c117767ee4c59a126244ff5061bd5ec3",
+    "_fit_hc_cox": "d5723fe2b9384f290db88c5bea40e0207566f35f821693607d8c36ca7965c7e8",
+    "_score_from_fit": "205320696ca754c9184080e77df7dcb480d47d26984c664c28ccc543abe17713",
+    "internal_choose_k_hc": "60f8b0254a9418188ba4f4b482bced2eb22f5711b95d614b1dce4d664926e10f",
+    "train_handcrafted_survival_model": "9c6e1aa7b9947ae1aafffb275544ef4b50e17d80b7daab4b20d4d45b5576fa48",
+    "apply_handcrafted_bundle": "f9b3503a9bb44ee8c5d807ec85e853d2702a73a2a461ec36d6e52a8d889d9163",
+    "hc_performance_row": "d328c9d1ed9249bde3ad6ff8479aed0801ede17eb0a21553be223a888219b937",
+    "plot_hc_km": "e4811a8b3b85d83e1b4c3813fb13c9dfb4d104338c1d3bfac473e646c821eed2",
+    "plot_handcrafted_feature_transition": "c4b28680397b314ef25fe16a2908ed0fd831e503f5f40daa294437dcab87c1ce",
+    "plot_handcrafted_feature_transition_clean": "e5f70321758e0d3f3ed3b20ebcd7a0932e57dcdb94c80f8d024b512d1c065484",
+    "load_cached_handcrafted_features": "f9adfb6f195b7c60fc4b8199dcc6c0de41fded7ca26faad54223edac4d836a25",
+    "load_cached_handcrafted_features_exact": "88061a883db4e203f9619f281f7680af66dedb00f468d74964bc042e7fa72ee0"
+  },
+  "horizon.py": {
+    "safe_horizon_performance": "c6144463cec3f9b4862d03491f64870d67deedfb9be254fb1151e9cc6a352414"
+  },
+  "rank_transition.py": {
+    "feature_rank_shift_bump_FIXED": "f85f9059412eac00194ca838134b7baabb6ee93ec6761cea6063fcd5e9445c1c"
+  },
+  "treatment.py": {
+    "zscore_from_train_apply": "95cdc2be48e58be52c3b2316ea20ea91a8d0a789e3c48528e8d7f94466cc74ab",
+    "fit_treatment_adjusted_cox": "c62c1b778820e77df541a37618887c3a7a39cf8f3d1a22dbf1121c5a19436743"
+  },
+  "mediation.py": {
+    "build_adjusted_mediators": "2e349853eff5cf87da55a69b0b14d04c0e5aa7781416f5ee19918b5ed0419bc5",
+    "run_assumption_checks": "ea46853a79ce8b4db719ea0ccfc67100f083220d46becd33795c0da75fb795be",
+    "compute_vif": "f479ee87a47eb336be2bfdc28988874b026459ea49db4420a9871bae69b42576",
+    "run_single_mediator": "08c96a20522d5edaeea6a1945417b8dfd041bc6f424b5fbdd5830fd075f3d3df",
+    "test_mediator_independence_assumption": "875740113c04171cddaf8ef0023ba5e2b4a0d0c21d3ea4fe00b5638faa1696d9",
+    "run_two_mediator": "1424544e4bc200aa8ff317282984dc1b909ad3a37b7c1b9e837c3887cea0c681"
+  }
+}
