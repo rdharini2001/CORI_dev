@@ -1,21 +1,4 @@
-# CORI Analysis — Clean Modular Package
-
-This project refactors the uploaded CORI analysis notebooks and scripts into a reusable Python package. The notebooks now contain configuration and experiment calls only; cohort construction, model training, feature extraction, evaluation, plotting, mediation, CMR, handcrafted-retina, treatment, and proteomics logic live under `src/cori_analysis/`.
-
-## What is preserved
-
-The statistical implementations moved from the uploaded scripts are unchanged at the function-body level. The test suite checks AST hashes for 98 moved functions, including cohort formation, RetFound feature filtering, Cox ranking and training, locked-model application, thresholds, C-index/HR calculations, clinical models, CMR analysis, treatment analysis, handcrafted models, mediation, and plotting.
-
-The refactor preserves:
-
-- Development centers: Birmingham and Croydon.
-- Primary 10-year MACE endpoint and 3/5/10-year horizon columns.
-- Development-only feature selection, imputation, scaling, thresholds, and model locking.
-- CORI, M-MACE, HCORI, and H-M-MACE training/application logic.
-- Clinical, treatment, cancer-status interaction, CMR, residualization, mediation, and proteomics analyses.
-- Existing model-bundle formats and principal output filenames.
-
-Numerical outputs cannot be regenerated in this package archive because the source datasets are not included. Run the supplied tests first, then run against the same input data to confirm manuscript-number parity.
+# Cardio-Oncology Retinal Index for Early Cardiovascular Risk Stratification in Cancer Patients
 
 ## Project layout
 
