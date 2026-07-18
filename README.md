@@ -33,8 +33,9 @@ CORI_analysis_clean/
 ├── tests/
 ├── pyproject.toml
 ├── requirements.txt
-└── REFACTOR_NOTES.md
 ```
+
+<img src="overview.svg" alt="CORI" width="400">
 
 ## Installation
 
