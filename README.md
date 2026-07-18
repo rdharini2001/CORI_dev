@@ -52,7 +52,7 @@ pytest -q
 
 ## Configure data paths
 
-The only paths to edit are in `DataPaths`. The package does not search alternate drives or candidate filenames.
+The only paths to edit are in `DataPaths`. 
 
 ```python
 from pathlib import Path
@@ -82,7 +82,7 @@ source_population_with_retinal_scores.csv
 alz_proteomics_columns.txt
 ```
 
-The clinical file defaults to exact columns `eid`, `HTN`, `Diabetes`, and optional `sex`. Change `ColumnSchema` in the configuration when your file uses different exact names; do not add new alias searches to analysis code.
+The clinical file defaults to exact columns `eid`, `HTN`, `Diabetes`, and `sex`. Change `ColumnSchema` in the configuration when your file uses different exact names
 
 ## Run the full analysis
 
