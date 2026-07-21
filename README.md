@@ -35,7 +35,7 @@ CORI_analysis_clean/
 ├── requirements.txt
 ```
 
-<img src="cori.png" alt="CORI" width="600">
+<img src="cori.png" alt="CORI" width="1000">
 
 ## Installation
 
