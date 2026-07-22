@@ -2,3 +2,7 @@
 
 data/
 outputs/
+
+archive/
+src/__pycache__/
+outputs_refactored/
