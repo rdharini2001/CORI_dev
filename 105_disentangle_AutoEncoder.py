@@ -306,37 +306,56 @@ meanpool['D4_mmace'] = d4_MMACEPreProcess
 # %%
 """
 Cancer-conditioned MACE modeling: a single target (MACE) split into two
-group-routed branches -- cancer patients and non-cancer patients -- sharing a
-common trunk plus a group-private residual. Cancer status is a KNOWN, observed
-grouping variable here (not a predicted task): every row's MACE label is
-routed to exactly one branch based on its already-known cancer-cohort
-membership, via the same NaN-masking machinery normally used for missing
-labels (see MultiTaskDataset).
+group-routed branches -- cancer patients and non-cancer patients. Cancer
+status is a KNOWN, observed grouping variable here (not a predicted task):
+every row's MACE label is routed to exactly one branch based on its
+already-known cancer-cohort membership, via the same NaN-masking machinery
+normally used for missing labels (see MultiTaskDataset).
 
 Architecture
-    X -> shared_encoder      -> E1 (shared embedding: the common MACE mechanism)
+    X -> shared_encoder      -> E1 (diagnostic-only: the common MACE mechanism,
+                                     feeds recon_* and the linear probes below,
+                                     but NOT the deployed classifiers)
     X -> private_encoder_1   -> P1 (cancer-branch-private embedding)
     X -> private_encoder_2   -> P2 (non-cancer-branch-private embedding)
-    [E1;P1] -> decoder_1 -> E2_1 -> classifier_1 -> MACE logit, cancer patients only
-    [E1;P2] -> decoder_2 -> E2_2 -> classifier_2 -> MACE logit, non-cancer patients only
+    P1 -> decoder_1 -> E2_1 -> classifier_1 -> MACE logit, cancer patients only
+    P2 -> decoder_2 -> E2_2 -> classifier_2 -> MACE logit, non-cancer patients only
     (optional) [E1;P1] -> recon_1 -> X_hat_1
     (optional) [E1;P2] -> recon_2 -> X_hat_2
+
+    classifier_1/classifier_2 deliberately do NOT read E1. E1 is
+    gradient-trained by BOTH branches every step, so a classifier that reads
+    it inherits cross-group-transferable signal by construction -- which is
+    exactly what made the two arms' cross-tests (each arm scored on the OTHER
+    group) fail to cleanly collapse in the shared-trunk version of this model.
+    With E1 excluded from the classifier path, classifier_1's entire parameter
+    chain is trained exclusively by cancer rows (and classifier_2 exclusively
+    by non-cancer rows), so any cross-group transfer that remains reflects the
+    data, not shared parameters.
 
 Losses
     - masked BCE per branch (mask = row belongs to that branch's cancer-group),
       combined via learned homoscedastic uncertainty weighting (Kendall et al. 2018)
-    - DSN-style difference/orthogonality loss between E1 and each private embedding
-      (pushes the shared MACE mechanism and each group-specific residual toward
-      non-redundant information -- NOT a loss that pushes the two branches' AUCs
-      apart; any AUC gap between branches is an empirical readout, not a training target)
-    - optional reconstruction loss
+    - DSN-style difference/orthogonality loss between E1 and each private
+      embedding, computed ONLY on that branch's own rows (P1 vs E1 restricted
+      to cancer rows, P2 vs E1 restricted to non-cancer rows) -- pushes each
+      group-specific residual toward non-redundant information relative to the
+      shared mechanism, conditional on that group. NOT a loss that pushes the
+      two branches' AUCs apart; any AUC gap between branches is an empirical
+      readout, not a training target.
+    - optional reconstruction loss (still uses [E1;P], since reconstructing
+      raw X doesn't touch the MACE label and so can't leak outcome
+      information across groups the way sharing E1 in the classifier did)
 
-Disentanglement diagnostics (printed during training)
+Diagnostics (printed during training)
     - per-branch MACE AUC from the deployed classifiers (want: high, improving) --
       these ARE the "MACE AUC in cancer patients" / "MACE AUC in non-cancer
       patients" numbers, since the branch masks are exactly the cancer groups
-    - E1 -> MACE|cancer / E1 -> MACE|noncancer linear-probe AUC (sanity: the
-      shared embedding alone should stay predictive of MACE in both groups)
+    - cross-arm AUC: each classifier scored on the OTHER group's true MACE
+      labels (want: near/below chance, ~0.5, if each arm is genuinely specific
+      to its own group)
+    - E1 -> MACE|cancer / E1 -> MACE|noncancer linear-probe AUC (sanity: is
+      there a common mechanism at all, independent of what the classifiers use)
     - P1 -> MACE|noncancer / P2 -> MACE|cancer linear-probe AUC (leakage: should
       sit near chance, ~0.5, if the private embeddings are genuinely group-specific)
     - mean |cross-correlation| between E1 and each private embedding (want: shrinking toward 0)
@@ -386,26 +405,40 @@ def make_loaders(X_train, Y1_train, Y2_train, X_test, Y1_test, Y2_test, batch_si
 # 2. Model
 # ---------------------------------------------------------------------------
 
-def mlp(in_dim, out_dim, hidden=128):
-    return nn.Sequential(
+def mlp(in_dim, out_dim, hidden=128, dropout=0.0):
+    layers = [
         nn.Linear(in_dim, hidden),
         nn.ReLU(inplace=True),
         nn.LayerNorm(hidden),
-        nn.Linear(hidden, out_dim),
-    )
+    ]
+    if dropout > 0:
+        layers.append(nn.Dropout(dropout))
+    layers.append(nn.Linear(hidden, out_dim))
+    return nn.Sequential(*layers)
 
 
 class DisentangledMultiTaskNet(nn.Module):
-    def __init__(self, in_dim, shared_dim=64, private_dim=32, e2_dim=32, use_recon=False):
+    def __init__(self, in_dim, shared_dim=64, private_dim=32, e2_dim=32, use_recon=False, dropout=0.0):
         super().__init__()
         self.use_recon = use_recon
 
         self.shared_encoder = mlp(in_dim, shared_dim)
-        self.private_encoder_1 = mlp(in_dim, private_dim)
-        self.private_encoder_2 = mlp(in_dim, private_dim)
+        self.private_encoder_1 = mlp(in_dim, private_dim, dropout=dropout)
+        self.private_encoder_2 = mlp(in_dim, private_dim, dropout=dropout)
 
-        self.decoder_1 = mlp(shared_dim + private_dim, e2_dim)
-        self.decoder_2 = mlp(shared_dim + private_dim, e2_dim)
+        # Classifiers deliberately read the group-private embedding ALONE, not
+        # concatenated with the shared E1 -- E1 is gradient-trained by BOTH
+        # branches, so any classifier that reads it inherits cross-group
+        # transferable signal by construction, making it impossible to test
+        # genuine group-specificity via cross-testing. Dropping E1 here means
+        # classifier_1's entire parameter chain is trained exclusively by
+        # cancer rows (and classifier_2 exclusively by non-cancer rows), so
+        # any cross-group transfer that remains is a property of the data, not
+        # of shared parameters. E1 stays in the model as a diagnostic-only
+        # embedding (feeds recon_* and the linear probes in
+        # log_disentanglement_metrics).
+        self.decoder_1 = mlp(private_dim, e2_dim, dropout=dropout)
+        self.decoder_2 = mlp(private_dim, e2_dim, dropout=dropout)
 
         self.classifier_1 = nn.Linear(e2_dim, 1)
         self.classifier_2 = nn.Linear(e2_dim, 1)
@@ -423,8 +456,8 @@ class DisentangledMultiTaskNet(nn.Module):
         p1 = self.private_encoder_1(x)
         p2 = self.private_encoder_2(x)
 
-        e2_1 = self.decoder_1(torch.cat([e1, p1], dim=-1))
-        e2_2 = self.decoder_2(torch.cat([e1, p2], dim=-1))
+        e2_1 = self.decoder_1(p1)
+        e2_2 = self.decoder_2(p2)
 
         logit1 = self.classifier_1(e2_1).squeeze(-1)
         logit2 = self.classifier_2(e2_2).squeeze(-1)
@@ -476,8 +509,14 @@ def compute_losses(out, y1, y2, m1, m2, x, pos_weight1, pos_weight2,
         + torch.exp(-model.log_sigma2) * task2_loss + model.log_sigma2
     )
 
-    orth1 = difference_loss(out["e1"], out["p1"])
-    orth2 = difference_loss(out["e1"], out["p2"])
+    # Each branch's orthogonality term uses only that branch's own rows: P1
+    # should be decorrelated from E1 conditional on cancer patients (not the
+    # whole population), mirroring the masking already used for the
+    # classification loss above.
+    mask1 = m1 > 0.5
+    mask2 = m2 > 0.5
+    orth1 = difference_loss(out["e1"][mask1], out["p1"][mask1]) if mask1.sum() > 1 else out["e1"].sum() * 0.0
+    orth2 = difference_loss(out["e1"][mask2], out["p2"][mask2]) if mask2.sum() > 1 else out["e1"].sum() * 0.0
     orth_loss = orth1 + orth2
 
     total = weighted_task_loss + lambda_orth * orth_loss
@@ -629,9 +668,9 @@ def compute_pos_weight(y, mask):
 
 
 def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
-          lambda_orth=0.1, lambda_recon=0.0, diagnostics_every=5):
+          lambda_orth=0.1, lambda_recon=0.0, diagnostics_every=5, weight_decay=1e-3):
     model.to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     all_y1 = np.concatenate([b[1].numpy() for b in train_loader])
     all_y2 = np.concatenate([b[2].numpy() for b in train_loader])
@@ -646,6 +685,7 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
         "epoch": [], "total": [], "task1": [], "task2": [], "orth1": [], "orth2": [], "recon": [],
         "auc_epoch": [], "train_auc1": [], "train_auc2": [], "test_auc1": [], "test_auc2": [],
         "test_cross_cancer_arm": [], "test_cross_noncancer_arm": [],
+        "delta_cancer_arm": [], "delta_noncancer_arm": [],
     }
 
     for epoch in range(1, epochs + 1):
@@ -684,6 +724,13 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
             test_auc1, test_auc2, test_cross_cancer, test_cross_noncancer = evaluate_task_performance(
                 model, test_loader, device
             )
+            # specificity delta: in-group test AUC minus that same arm's cross-group
+            # AUC -- the bigger this is, the more the arm's own-group performance
+            # stands apart from how it does on the other group (0 or negative means
+            # no real specificity: the arm does just as well, or better, elsewhere)
+            delta_cancer_arm = test_auc1 - test_cross_cancer
+            delta_noncancer_arm = test_auc2 - test_cross_noncancer
+
             history["auc_epoch"].append(epoch)
             history["train_auc1"].append(train_auc1)
             history["train_auc2"].append(train_auc2)
@@ -691,6 +738,8 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
             history["test_auc2"].append(test_auc2)
             history["test_cross_cancer_arm"].append(test_cross_cancer)
             history["test_cross_noncancer_arm"].append(test_cross_noncancer)
+            history["delta_cancer_arm"].append(delta_cancer_arm)
+            history["delta_noncancer_arm"].append(delta_noncancer_arm)
             print(
                 f"[epoch {epoch:03d}] train | MACE AUC[cancer]={train_auc1:.3f}  MACE AUC[non-cancer]={train_auc2:.3f}  |  "
                 f"test  | MACE AUC[cancer]={test_auc1:.3f}  MACE AUC[non-cancer]={test_auc2:.3f}"
@@ -698,11 +747,65 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
             print(
                 f"[epoch {epoch:03d}] cross-test | "
                 f"train cancer-arm->non-cancer={train_cross_cancer:.3f}  noncancer-arm->cancer={train_cross_noncancer:.3f}  |  "
-                f"test  cancer-arm->non-cancer={test_cross_cancer:.3f}  noncancer-arm->cancer={test_cross_noncancer:.3f}"
+                f"test  cancer-arm->non-cancer={test_cross_cancer:.3f}  noncancer-arm->cancer={test_cross_noncancer:.3f}  |  "
+                f"delta  cancer-arm={delta_cancer_arm:+.3f}  noncancer-arm={delta_noncancer_arm:+.3f}"
             )
             log_disentanglement_metrics(model, train_loader, test_loader, device, epoch)
 
+    summarize_best_epochs(history)
+    save_history_csv(history)
     return model, history
+
+
+def summarize_best_epochs(history):
+    """Report each arm's own best epoch: since the two classifiers no longer
+    share parameters, they can peak at different points in training. The
+    number worth citing is each arm's in-group AUC AND its cross-group AUC
+    AT THAT SAME EPOCH -- not whatever the two happen to be at the final epoch."""
+    best_cancer_idx = int(np.argmax(history["test_auc1"]))
+    best_noncancer_idx = int(np.argmax(history["test_auc2"]))
+    print(
+        f"[best cancer arm]     epoch {history['auc_epoch'][best_cancer_idx]:03d}  "
+        f"in-group test AUC={history['test_auc1'][best_cancer_idx]:.3f}  "
+        f"cross (on non-cancer)={history['test_cross_cancer_arm'][best_cancer_idx]:.3f}"
+    )
+    print(
+        f"[best non-cancer arm] epoch {history['auc_epoch'][best_noncancer_idx]:03d}  "
+        f"in-group test AUC={history['test_auc2'][best_noncancer_idx]:.3f}  "
+        f"cross (on cancer)={history['test_cross_noncancer_arm'][best_noncancer_idx]:.3f}"
+    )
+
+
+def save_history_csv(history, path="disentangle_training_history.csv"):
+    """One row per diagnostics_every checkpoint: that epoch's train losses,
+    per-arm train/test AUC, cross-arm AUC, and each arm's specificity delta
+    (in-group test AUC minus its cross-group AUC -- bigger means more
+    genuinely group-specific; near/below zero means the arm transfers to the
+    other group about as well as it does on its own)."""
+    rows = []
+    for i, epoch in enumerate(history["auc_epoch"]):
+        loss_idx = epoch - 1  # history["epoch"] runs 1..N in order, so index = epoch-1
+        rows.append({
+            "epoch": epoch,
+            "train_loss_total": history["total"][loss_idx],
+            "train_loss_mace_cancer": history["task1"][loss_idx],
+            "train_loss_mace_noncancer": history["task2"][loss_idx],
+            "orth1": history["orth1"][loss_idx],
+            "orth2": history["orth2"][loss_idx],
+            "recon": history["recon"][loss_idx],
+            "train_auc_cancer": history["train_auc1"][i],
+            "train_auc_noncancer": history["train_auc2"][i],
+            "test_auc_cancer": history["test_auc1"][i],
+            "test_auc_noncancer": history["test_auc2"][i],
+            "test_cross_cancer_arm": history["test_cross_cancer_arm"][i],
+            "test_cross_noncancer_arm": history["test_cross_noncancer_arm"][i],
+            "delta_cancer_arm": history["delta_cancer_arm"][i],
+            "delta_noncancer_arm": history["delta_noncancer_arm"][i],
+        })
+    df = pd.DataFrame(rows)
+    df.to_csv(path, index=False)
+    print(f"Saved epoch-wise metrics to {path}")
+    return df
 
 
 def plot_training_history(history):
@@ -827,7 +930,7 @@ train_loader, test_loader = make_loaders(
 )
 
 model = DisentangledMultiTaskNet(
-    in_dim=train_X.shape[1], shared_dim=64, private_dim=32, e2_dim=32, use_recon=True
+    in_dim=train_X.shape[1], shared_dim=64, private_dim=32, e2_dim=32, use_recon=True, dropout=0.3
 )
 
 # %%
