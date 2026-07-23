@@ -305,30 +305,41 @@ meanpool['D4_mmace'] = d4_MMACEPreProcess
 
 # %%
 """
-Disentangled multi-task learning: shared + private encoders for two label sets
-(Y1, Y2) from a common feature input X.
+Cancer-conditioned MACE modeling: a single target (MACE) split into two
+group-routed branches -- cancer patients and non-cancer patients -- sharing a
+common trunk plus a group-private residual. Cancer status is a KNOWN, observed
+grouping variable here (not a predicted task): every row's MACE label is
+routed to exactly one branch based on its already-known cancer-cohort
+membership, via the same NaN-masking machinery normally used for missing
+labels (see MultiTaskDataset).
 
 Architecture
-    X -> shared_encoder      -> E1 (shared embedding)
-    X -> private_encoder_1   -> P1 (task-1-private embedding)
-    X -> private_encoder_2   -> P2 (task-2-private embedding)
-    [E1;P1] -> decoder_1 -> E2_1 -> classifier_1 -> Y1 logit
-    [E1;P2] -> decoder_2 -> E2_2 -> classifier_2 -> Y2 logit
+    X -> shared_encoder      -> E1 (shared embedding: the common MACE mechanism)
+    X -> private_encoder_1   -> P1 (cancer-branch-private embedding)
+    X -> private_encoder_2   -> P2 (non-cancer-branch-private embedding)
+    [E1;P1] -> decoder_1 -> E2_1 -> classifier_1 -> MACE logit, cancer patients only
+    [E1;P2] -> decoder_2 -> E2_2 -> classifier_2 -> MACE logit, non-cancer patients only
     (optional) [E1;P1] -> recon_1 -> X_hat_1
     (optional) [E1;P2] -> recon_2 -> X_hat_2
 
 Losses
-    - masked BCE per task (handles missing labels), combined via learned
-      homoscedastic uncertainty weighting (Kendall et al. 2018)
+    - masked BCE per branch (mask = row belongs to that branch's cancer-group),
+      combined via learned homoscedastic uncertainty weighting (Kendall et al. 2018)
     - DSN-style difference/orthogonality loss between E1 and each private embedding
+      (pushes the shared MACE mechanism and each group-specific residual toward
+      non-redundant information -- NOT a loss that pushes the two branches' AUCs
+      apart; any AUC gap between branches is an empirical readout, not a training target)
     - optional reconstruction loss
 
 Disentanglement diagnostics (printed during training)
-    - task AUCs from the deployed classifiers (want: high, improving)
-    - E1 -> Y1 / E1 -> Y2 linear-probe AUC (sanity: E1 should stay predictive of both)
-    - P1 -> Y2 / P2 -> Y1 linear-probe AUC (leakage: should sit near chance, ~0.5,
-      if the private embeddings are genuinely task-specific)
-    - mean |cosine similarity| between E1 and each private embedding (want: shrinking toward 0)
+    - per-branch MACE AUC from the deployed classifiers (want: high, improving) --
+      these ARE the "MACE AUC in cancer patients" / "MACE AUC in non-cancer
+      patients" numbers, since the branch masks are exactly the cancer groups
+    - E1 -> MACE|cancer / E1 -> MACE|noncancer linear-probe AUC (sanity: the
+      shared embedding alone should stay predictive of MACE in both groups)
+    - P1 -> MACE|noncancer / P2 -> MACE|cancer linear-probe AUC (leakage: should
+      sit near chance, ~0.5, if the private embeddings are genuinely group-specific)
+    - mean |cross-correlation| between E1 and each private embedding (want: shrinking toward 0)
 """
 
 import numpy as np
@@ -544,26 +555,19 @@ def cosine_overlap(shared, private):
     return float(np.abs(corr).mean())
 
 
-def subgroup_auc(y_target, scores_target, mask_target, y_other, mask_other):
-    """AUC of the target task split by the OTHER task's label (0 vs 1), restricted
-    to samples with valid labels for both -- e.g. cancer AUC computed separately
-    within the MACE and non-MACE subgroups."""
-    valid = (mask_target > 0.5) & (mask_other > 0.5)
-    out = {}
-    for name, group_val in [("neg", 0), ("pos", 1)]:
-        idx = valid & (y_other == group_val)
-        out[name] = safe_auc(y_target[idx], scores_target[idx]) if idx.sum() else float("nan")
-    return out
-
-
 @torch.no_grad()
 def evaluate_task_performance(model, loader, device):
     """AUC from the actual deployed classifiers (E2 path) -- the metric that matters.
 
-    Also breaks each task's AUC down by the OTHER task's label, e.g. cancer AUC
-    within the MACE-positive vs. MACE-negative subgroup, and vice versa -- this
-    surfaces whether performance is uneven across those subgroups rather than
-    genuinely task-specific."""
+    Since the branch masks ARE the cancer-group membership, auc1/auc2 already
+    are "MACE AUC in cancer patients" / "MACE AUC in non-cancer patients".
+
+    Also cross-tests each arm on the OTHER group it was never trained on:
+    cross_cancer_arm = classifier_1 (trained only on cancer patients), scored
+    against non-cancer patients' true MACE labels; cross_noncancer_arm =
+    classifier_2 (trained only on non-cancer patients), scored against cancer
+    patients' true labels. This tells us whether each arm's decision boundary
+    is genuinely group-specific or would work just as well on the other group."""
     model.eval()
     logits1, logits2, y1s, y2s, m1s, m2s = [], [], [], [], [], []
     for x, y1, y2, m1, m2 in loader:
@@ -578,33 +582,34 @@ def evaluate_task_performance(model, loader, device):
     m1s, m2s = np.concatenate(m1s), np.concatenate(m2s)
     auc1 = safe_auc(y1s[m1s > 0.5], logits1[m1s > 0.5]) if (m1s > 0.5).sum() else float("nan")
     auc2 = safe_auc(y2s[m2s > 0.5], logits2[m2s > 0.5]) if (m2s > 0.5).sum() else float("nan")
-    # cancer (task1) AUC within MACE-negative / MACE-positive subgroups
-    auc1_by_y2 = subgroup_auc(y1s, logits1, m1s, y2s, m2s)
-    # MACE (task2) AUC within cancer-negative / cancer-positive subgroups
-    auc2_by_y1 = subgroup_auc(y2s, logits2, m2s, y1s, m1s)
-    return auc1, auc2, auc1_by_y2, auc2_by_y1
+    # cancer arm (classifier_1) scored on non-cancer patients' true MACE labels
+    cross_cancer_arm = safe_auc(y2s[m2s > 0.5], logits1[m2s > 0.5]) if (m2s > 0.5).sum() else float("nan")
+    # non-cancer arm (classifier_2) scored on cancer patients' true MACE labels
+    cross_noncancer_arm = safe_auc(y1s[m1s > 0.5], logits2[m1s > 0.5]) if (m1s > 0.5).sum() else float("nan")
+    return auc1, auc2, cross_cancer_arm, cross_noncancer_arm
 
 
 def log_disentanglement_metrics(model, train_loader, test_loader, device, epoch):
     E1_tr, P1_tr, P2_tr, Y1_tr, Y2_tr, M1_tr, M2_tr = extract_embeddings(model, train_loader, device)
     E1_te, P1_te, P2_te, Y1_te, Y2_te, M1_te, M2_te = extract_embeddings(model, test_loader, device)
 
-    # sanity: E1 alone should still predict both tasks reasonably well
-    e1_on_y1 = probe_auc(E1_tr, Y1_tr, M1_tr, E1_te, Y1_te, M1_te)
-    e1_on_y2 = probe_auc(E1_tr, Y2_tr, M2_tr, E1_te, Y2_te, M2_te)
+    # sanity: E1 (shared MACE mechanism) alone should still predict MACE in both groups
+    e1_on_cancer = probe_auc(E1_tr, Y1_tr, M1_tr, E1_te, Y1_te, M1_te)
+    e1_on_noncancer = probe_auc(E1_tr, Y2_tr, M2_tr, E1_te, Y2_te, M2_te)
 
-    # leakage: each private embedding predicting the OTHER task should sit near chance
-    leak_p1_on_y2 = probe_auc(P1_tr, Y2_tr, M2_tr, P1_te, Y2_te, M2_te)
-    leak_p2_on_y1 = probe_auc(P2_tr, Y1_tr, M1_tr, P2_te, Y1_te, M1_te)
+    # leakage: each group-private embedding predicting MACE in the OTHER group
+    # should sit near chance if it's genuinely specific to its own group
+    leak_p1_on_noncancer = probe_auc(P1_tr, Y2_tr, M2_tr, P1_te, Y2_te, M2_te)
+    leak_p2_on_cancer = probe_auc(P2_tr, Y1_tr, M1_tr, P2_te, Y1_te, M1_te)
 
     overlap1 = cosine_overlap(E1_te, P1_te)
     overlap2 = cosine_overlap(E1_te, P2_te)
 
     print(
         f"[epoch {epoch:03d}] disentanglement | "
-        f"E1->Y1(sanity, want high)={e1_on_y1:.3f}  E1->Y2(sanity, want high)={e1_on_y2:.3f}  |  "
-        f"P1->Y2(leak, want ~0.5)={leak_p1_on_y2:.3f}  P2->Y1(leak, want ~0.5)={leak_p2_on_y1:.3f}  |  "
-        f"cos(E1,P1)={overlap1:.3f}  cos(E1,P2)={overlap2:.3f}"
+        f"E1->MACE|cancer(sanity, want high)={e1_on_cancer:.3f}  E1->MACE|noncancer(sanity, want high)={e1_on_noncancer:.3f}  |  "
+        f"P_cancer->MACE|noncancer(leak, want ~0.5)={leak_p1_on_noncancer:.3f}  P_noncancer->MACE|cancer(leak, want ~0.5)={leak_p2_on_cancer:.3f}  |  "
+        f"cos(E1,P_cancer)={overlap1:.3f}  cos(E1,P_noncancer)={overlap2:.3f}"
     )
 
 
@@ -640,6 +645,7 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
     history = {
         "epoch": [], "total": [], "task1": [], "task2": [], "orth1": [], "orth2": [], "recon": [],
         "auc_epoch": [], "train_auc1": [], "train_auc2": [], "test_auc1": [], "test_auc2": [],
+        "test_cross_cancer_arm": [], "test_cross_noncancer_arm": [],
     }
 
     for epoch in range(1, epochs + 1):
@@ -667,15 +673,15 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
 
         print(
             f"[epoch {epoch:03d}] train | total={running['total']:.4f}  "
-            f"task1={running['task1']:.4f}  task2={running['task2']:.4f}  "
+            f"mace_cancer={running['task1']:.4f}  mace_noncancer={running['task2']:.4f}  "
             f"orth1={running['orth1']:.4f}  orth2={running['orth2']:.4f}  recon={running['recon']:.4f}"
         )
 
         if epoch % diagnostics_every == 0 or epoch == epochs:
-            train_auc1, train_auc2, train_auc1_by_y2, train_auc2_by_y1 = evaluate_task_performance(
+            train_auc1, train_auc2, train_cross_cancer, train_cross_noncancer = evaluate_task_performance(
                 model, train_loader, device
             )
-            test_auc1, test_auc2, test_auc1_by_y2, test_auc2_by_y1 = evaluate_task_performance(
+            test_auc1, test_auc2, test_cross_cancer, test_cross_noncancer = evaluate_task_performance(
                 model, test_loader, device
             )
             history["auc_epoch"].append(epoch)
@@ -683,16 +689,16 @@ def train(model, train_loader, test_loader, device, epochs=50, lr=1e-3,
             history["train_auc2"].append(train_auc2)
             history["test_auc1"].append(test_auc1)
             history["test_auc2"].append(test_auc2)
+            history["test_cross_cancer_arm"].append(test_cross_cancer)
+            history["test_cross_noncancer_arm"].append(test_cross_noncancer)
             print(
-                f"[epoch {epoch:03d}] train | task1 AUC={train_auc1:.3f}  task2 AUC={train_auc2:.3f}  |  "
-                f"test  | task1 AUC={test_auc1:.3f}  task2 AUC={test_auc2:.3f}"
+                f"[epoch {epoch:03d}] train | MACE AUC[cancer]={train_auc1:.3f}  MACE AUC[non-cancer]={train_auc2:.3f}  |  "
+                f"test  | MACE AUC[cancer]={test_auc1:.3f}  MACE AUC[non-cancer]={test_auc2:.3f}"
             )
             print(
-                f"[epoch {epoch:03d}] subgroup | "
-                f"train cancer AUC[MACE-]={train_auc1_by_y2['neg']:.3f} [MACE+]={train_auc1_by_y2['pos']:.3f}  "
-                f"MACE AUC[cancer-]={train_auc2_by_y1['neg']:.3f} [cancer+]={train_auc2_by_y1['pos']:.3f}  |  "
-                f"test  cancer AUC[MACE-]={test_auc1_by_y2['neg']:.3f} [MACE+]={test_auc1_by_y2['pos']:.3f}  "
-                f"MACE AUC[cancer-]={test_auc2_by_y1['neg']:.3f} [cancer+]={test_auc2_by_y1['pos']:.3f}"
+                f"[epoch {epoch:03d}] cross-test | "
+                f"train cancer-arm->non-cancer={train_cross_cancer:.3f}  noncancer-arm->cancer={train_cross_noncancer:.3f}  |  "
+                f"test  cancer-arm->non-cancer={test_cross_cancer:.3f}  noncancer-arm->cancer={test_cross_noncancer:.3f}"
             )
             log_disentanglement_metrics(model, train_loader, test_loader, device, epoch)
 
@@ -709,14 +715,14 @@ def plot_training_history(history):
     ax.plot(history["auc_epoch"], history["train_auc1"], label="train", marker="o")
     ax.plot(history["auc_epoch"], history["test_auc1"], label="test", marker="o")
     ax.axhline(0.5, color="gray", linestyle="--", linewidth=1)
-    ax.set_title("Task 1 AUC")
+    ax.set_title("MACE AUC (cancer subgroup)")
     ax.set_xlabel("epoch"); ax.set_ylabel("AUC"); ax.legend()
 
     ax = axes[0, 1]
     ax.plot(history["auc_epoch"], history["train_auc2"], label="train", marker="o")
     ax.plot(history["auc_epoch"], history["test_auc2"], label="test", marker="o")
     ax.axhline(0.5, color="gray", linestyle="--", linewidth=1)
-    ax.set_title("Task 2 AUC")
+    ax.set_title("MACE AUC (non-cancer subgroup)")
     ax.set_xlabel("epoch"); ax.set_ylabel("AUC"); ax.legend()
 
     ax = axes[0, 2]
@@ -725,9 +731,9 @@ def plot_training_history(history):
     ax.set_xlabel("epoch"); ax.set_ylabel("loss"); ax.legend()
 
     ax = axes[1, 0]
-    ax.plot(history["epoch"], history["task1"], label="task1")
-    ax.plot(history["epoch"], history["task2"], label="task2")
-    ax.set_title("Task losses (BCE)")
+    ax.plot(history["epoch"], history["task1"], label="mace_cancer")
+    ax.plot(history["epoch"], history["task2"], label="mace_noncancer")
+    ax.set_title("MACE BCE loss (cancer / non-cancer branch)")
     ax.set_xlabel("epoch"); ax.set_ylabel("loss"); ax.legend()
 
     ax = axes[1, 1]
@@ -769,29 +775,40 @@ train_eid = pd.concat([d1_coriPreProcess['eid'], d3_coriPreProcess['eid']], igno
 train_X = pd.concat([d1_coriPreProcess[DEEP_FEATURES],
                      d3_coriPreProcess [DEEP_FEATURES]],
                     ignore_index=True).to_numpy()
-train_Y1 = [1] * len(d1_coriPreProcess) + [0] * len(d3_coriPreProcess)
-train_Y2 = d1_coriPreProcess['Y_mace'].tolist() + d3_coriPreProcess['Y_mace'].tolist()
+
+# Cancer status is a KNOWN grouping variable here (D1=cancer cohort, D3=never-cancer
+# cohort), not a task to predict. Route the single MACE label to exactly one branch
+# per row via NaN-masking -- branch 1 sees only cancer patients, branch 2 only
+# non-cancer patients -- reusing the same missing-label mechanism MultiTaskDataset
+# already uses for genuinely missing labels.
+train_cancer_group = np.array([1] * len(d1_coriPreProcess) + [0] * len(d3_coriPreProcess))
+train_mace = np.array(d1_coriPreProcess['Y_mace'].tolist() + d3_coriPreProcess['Y_mace'].tolist(), dtype=float)
+train_Y1 = np.where(train_cancer_group == 1, train_mace, np.nan)  # branch 1: MACE | cancer
+train_Y2 = np.where(train_cancer_group == 0, train_mace, np.nan)  # branch 2: MACE | non-cancer
 
 train_df = pd.DataFrame(train_X)
-train_df['Y_cancer'] = train_Y1
-train_df['Y_mace'] = train_Y2
+train_df['Y_cancer'] = train_cancer_group
+train_df['Y_mace'] = train_mace
 
-print("Train event Task 1(cancer) counts:", np.bincount(train_Y1))
-print("Train event Task 2(mace) counts:", np.bincount(train_Y2))
+print("Train MACE|cancer branch counts:", np.bincount(train_mace[train_cancer_group == 1].astype(int)))
+print("Train MACE|non-cancer branch counts:", np.bincount(train_mace[train_cancer_group == 0].astype(int)))
 
 test_eid = pd.concat([d2_coriPreProcess['eid'], d4_coriPreProcess['eid']], ignore_index=True).to_numpy()
 test_X = pd.concat([d2_coriPreProcess[DEEP_FEATURES],
                     d4_coriPreProcess [DEEP_FEATURES]],
                    ignore_index=True).to_numpy()
-test_Y1 = [1] * len(d2_coriPreProcess) + [0] * len(d4_coriPreProcess)
-test_Y2 = d2_coriPreProcess['Y_mace'].tolist() + d4_coriPreProcess['Y_mace'].tolist()
+
+test_cancer_group = np.array([1] * len(d2_coriPreProcess) + [0] * len(d4_coriPreProcess))
+test_mace = np.array(d2_coriPreProcess['Y_mace'].tolist() + d4_coriPreProcess['Y_mace'].tolist(), dtype=float)
+test_Y1 = np.where(test_cancer_group == 1, test_mace, np.nan)  # branch 1: MACE | cancer
+test_Y2 = np.where(test_cancer_group == 0, test_mace, np.nan)  # branch 2: MACE | non-cancer
 
 test_df = pd.DataFrame(test_X)
-test_df['Y_cancer'] = test_Y1
-test_df['Y_mace'] = test_Y2
+test_df['Y_cancer'] = test_cancer_group
+test_df['Y_mace'] = test_mace
 
-print("Test event Task 1(cancer) counts:", np.bincount(test_Y1))
-print("Test event Task 2(mace) counts:", np.bincount(test_Y2))
+print("Test MACE|cancer branch counts:", np.bincount(test_mace[test_cancer_group == 1].astype(int)))
+print("Test MACE|non-cancer branch counts:", np.bincount(test_mace[test_cancer_group == 0].astype(int)))
 
 # %%
 
@@ -818,7 +835,7 @@ model = DisentangledMultiTaskNet(
 
 model, history = train(
     model, train_loader, test_loader, device,
-    epochs=50, lr=1e-4, lambda_orth=0.1, lambda_recon=0.1, diagnostics_every=2,
+    epochs=100, lr=1e-4, lambda_orth=0.1, lambda_recon=0.1, diagnostics_every=2,
 )
 
 # %%

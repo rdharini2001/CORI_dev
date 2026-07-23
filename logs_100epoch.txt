@@ -1,0 +1,258 @@
+After variance filtering: 1024
+After correlation filtering: 946
+After variance filtering: 1024
+After correlation filtering: 149
+Train MACE|cancer branch counts: [1856  300]
+Train MACE|non-cancer branch counts: [12811  1348]
+Test MACE|cancer branch counts: [2100  335]
+Test MACE|non-cancer branch counts: [13302  1461]
+[epoch 001] train | total=6.7055  mace_cancer=3.3502  mace_noncancer=1.3466  orth1=8.7846  orth2=6.5565  recon=4.7711
+[epoch 002] train | total=4.8249  mace_cancer=2.7867  mace_noncancer=1.3044  orth1=1.6279  orth2=1.6496  recon=4.1303
+[epoch 002] train | MACE AUC[cancer]=0.650  MACE AUC[non-cancer]=0.642  |  test  | MACE AUC[cancer]=0.588  MACE AUC[non-cancer]=0.607
+[epoch 002] cross-test | train cancer-arm->non-cancer=0.599  noncancer-arm->cancer=0.505  |  test  cancer-arm->non-cancer=0.587  noncancer-arm->cancer=0.465
+[epoch 002] disentanglement | E1->MACE|cancer(sanity, want high)=0.624  E1->MACE|noncancer(sanity, want high)=0.636  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.605  P_noncancer->MACE|cancer(leak, want ~0.5)=0.622  |  cos(E1,P_cancer)=24.863  cos(E1,P_noncancer)=27.643
+[epoch 003] train | total=4.5744  mace_cancer=2.7463  mace_noncancer=1.2947  orth1=1.1188  orth2=0.9511  recon=3.3803
+[epoch 004] train | total=4.4125  mace_cancer=2.6969  mace_noncancer=1.2883  orth1=0.8694  orth2=0.8076  recon=2.7569
+[epoch 004] train | MACE AUC[cancer]=0.695  MACE AUC[non-cancer]=0.668  |  test  | MACE AUC[cancer]=0.633  MACE AUC[non-cancer]=0.626
+[epoch 004] cross-test | train cancer-arm->non-cancer=0.572  noncancer-arm->cancer=0.580  |  test  cancer-arm->non-cancer=0.569  noncancer-arm->cancer=0.575
+[epoch 004] disentanglement | E1->MACE|cancer(sanity, want high)=0.625  E1->MACE|noncancer(sanity, want high)=0.639  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.613  P_noncancer->MACE|cancer(leak, want ~0.5)=0.622  |  cos(E1,P_cancer)=27.843  cos(E1,P_noncancer)=23.041
+[epoch 005] train | total=4.2882  mace_cancer=2.6612  mace_noncancer=1.2791  orth1=0.7429  orth2=0.6944  recon=2.2476
+[epoch 006] train | total=4.2268  mace_cancer=2.6427  mace_noncancer=1.2666  orth1=0.8680  orth2=0.6732  recon=1.8826
+[epoch 006] train | MACE AUC[cancer]=0.714  MACE AUC[non-cancer]=0.684  |  test  | MACE AUC[cancer]=0.608  MACE AUC[non-cancer]=0.631
+[epoch 006] cross-test | train cancer-arm->non-cancer=0.576  noncancer-arm->cancer=0.597  |  test  cancer-arm->non-cancer=0.579  noncancer-arm->cancer=0.593
+[epoch 006] disentanglement | E1->MACE|cancer(sanity, want high)=0.623  E1->MACE|noncancer(sanity, want high)=0.645  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.621  P_noncancer->MACE|cancer(leak, want ~0.5)=0.619  |  cos(E1,P_cancer)=30.378  cos(E1,P_noncancer)=24.900
+[epoch 007] train | total=4.1448  mace_cancer=2.5957  mace_noncancer=1.2694  orth1=0.8386  orth2=0.6074  recon=1.6411
+[epoch 008] train | total=4.0883  mace_cancer=2.5616  mace_noncancer=1.2653  orth1=0.9019  orth2=0.5961  recon=1.4469
+[epoch 008] train | MACE AUC[cancer]=0.748  MACE AUC[non-cancer]=0.689  |  test  | MACE AUC[cancer]=0.599  MACE AUC[non-cancer]=0.635
+[epoch 008] cross-test | train cancer-arm->non-cancer=0.593  noncancer-arm->cancer=0.610  |  test  cancer-arm->non-cancer=0.587  noncancer-arm->cancer=0.617
+[epoch 008] disentanglement | E1->MACE|cancer(sanity, want high)=0.617  E1->MACE|noncancer(sanity, want high)=0.649  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.608  P_noncancer->MACE|cancer(leak, want ~0.5)=0.620  |  cos(E1,P_cancer)=34.087  cos(E1,P_noncancer)=19.150
+[epoch 009] train | total=4.0579  mace_cancer=2.5386  mace_noncancer=1.2603  orth1=1.0082  orth2=0.5898  recon=1.3598
+[epoch 010] train | total=4.0132  mace_cancer=2.5182  mace_noncancer=1.2505  orth1=1.0292  orth2=0.5463  recon=1.2744
+[epoch 010] train | MACE AUC[cancer]=0.773  MACE AUC[non-cancer]=0.700  |  test  | MACE AUC[cancer]=0.611  MACE AUC[non-cancer]=0.639
+[epoch 010] cross-test | train cancer-arm->non-cancer=0.564  noncancer-arm->cancer=0.645  |  test  cancer-arm->non-cancer=0.570  noncancer-arm->cancer=0.624
+[epoch 010] disentanglement | E1->MACE|cancer(sanity, want high)=0.621  E1->MACE|noncancer(sanity, want high)=0.648  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.577  P_noncancer->MACE|cancer(leak, want ~0.5)=0.618  |  cos(E1,P_cancer)=18.557  cos(E1,P_noncancer)=23.280
+[epoch 011] train | total=3.9414  mace_cancer=2.4689  mace_noncancer=1.2499  orth1=0.8887  orth2=0.5660  recon=1.2072
+[epoch 012] train | total=3.8253  mace_cancer=2.3657  mace_noncancer=1.2477  orth1=0.8449  orth2=0.5878  recon=1.1331
+[epoch 012] train | MACE AUC[cancer]=0.797  MACE AUC[non-cancer]=0.707  |  test  | MACE AUC[cancer]=0.615  MACE AUC[non-cancer]=0.646
+[epoch 012] cross-test | train cancer-arm->non-cancer=0.558  noncancer-arm->cancer=0.642  |  test  cancer-arm->non-cancer=0.566  noncancer-arm->cancer=0.640
+[epoch 012] disentanglement | E1->MACE|cancer(sanity, want high)=0.620  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.594  P_noncancer->MACE|cancer(leak, want ~0.5)=0.622  |  cos(E1,P_cancer)=25.831  cos(E1,P_noncancer)=19.207
+[epoch 013] train | total=3.7473  mace_cancer=2.3285  mace_noncancer=1.2361  orth1=0.6524  orth2=0.5274  recon=1.1143
+[epoch 014] train | total=3.7079  mace_cancer=2.2791  mace_noncancer=1.2369  orth1=0.7861  orth2=0.5415  recon=1.0755
+[epoch 014] train | MACE AUC[cancer]=0.810  MACE AUC[non-cancer]=0.718  |  test  | MACE AUC[cancer]=0.610  MACE AUC[non-cancer]=0.646
+[epoch 014] cross-test | train cancer-arm->non-cancer=0.522  noncancer-arm->cancer=0.658  |  test  cancer-arm->non-cancer=0.521  noncancer-arm->cancer=0.649
+[epoch 014] disentanglement | E1->MACE|cancer(sanity, want high)=0.615  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.609  P_noncancer->MACE|cancer(leak, want ~0.5)=0.625  |  cos(E1,P_cancer)=22.966  cos(E1,P_noncancer)=16.934
+[epoch 015] train | total=3.7623  mace_cancer=2.3262  mace_noncancer=1.2311  orth1=0.9880  orth2=0.5086  recon=1.0848
+[epoch 016] train | total=3.6311  mace_cancer=2.2290  mace_noncancer=1.2218  orth1=0.7801  orth2=0.4843  recon=1.0628
+[epoch 016] train | MACE AUC[cancer]=0.851  MACE AUC[non-cancer]=0.722  |  test  | MACE AUC[cancer]=0.600  MACE AUC[non-cancer]=0.653
+[epoch 016] cross-test | train cancer-arm->non-cancer=0.555  noncancer-arm->cancer=0.654  |  test  cancer-arm->non-cancer=0.557  noncancer-arm->cancer=0.652
+[epoch 016] disentanglement | E1->MACE|cancer(sanity, want high)=0.615  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.590  P_noncancer->MACE|cancer(leak, want ~0.5)=0.621  |  cos(E1,P_cancer)=19.314  cos(E1,P_noncancer)=15.714
+[epoch 017] train | total=3.5162  mace_cancer=2.1256  mace_noncancer=1.2200  orth1=0.7316  orth2=0.4612  recon=1.0263
+[epoch 018] train | total=3.4806  mace_cancer=2.0694  mace_noncancer=1.2355  orth1=0.8123  orth2=0.4608  recon=1.0058
+[epoch 018] train | MACE AUC[cancer]=0.835  MACE AUC[non-cancer]=0.713  |  test  | MACE AUC[cancer]=0.558  MACE AUC[non-cancer]=0.646
+[epoch 018] cross-test | train cancer-arm->non-cancer=0.578  noncancer-arm->cancer=0.661  |  test  cancer-arm->non-cancer=0.573  noncancer-arm->cancer=0.643
+[epoch 018] disentanglement | E1->MACE|cancer(sanity, want high)=0.624  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.618  P_noncancer->MACE|cancer(leak, want ~0.5)=0.621  |  cos(E1,P_cancer)=39.260  cos(E1,P_noncancer)=20.522
+[epoch 019] train | total=3.4655  mace_cancer=2.0693  mace_noncancer=1.2146  orth1=0.8621  orth2=0.4776  recon=1.0121
+[epoch 020] train | total=3.3574  mace_cancer=1.9850  mace_noncancer=1.2037  orth1=0.7482  orth2=0.4723  recon=0.9827
+[epoch 020] train | MACE AUC[cancer]=0.860  MACE AUC[non-cancer]=0.736  |  test  | MACE AUC[cancer]=0.616  MACE AUC[non-cancer]=0.653
+[epoch 020] cross-test | train cancer-arm->non-cancer=0.498  noncancer-arm->cancer=0.660  |  test  cancer-arm->non-cancer=0.498  noncancer-arm->cancer=0.648
+[epoch 020] disentanglement | E1->MACE|cancer(sanity, want high)=0.613  E1->MACE|noncancer(sanity, want high)=0.653  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.609  P_noncancer->MACE|cancer(leak, want ~0.5)=0.622  |  cos(E1,P_cancer)=23.047  cos(E1,P_noncancer)=14.822
+[epoch 021] train | total=3.3491  mace_cancer=1.9745  mace_noncancer=1.2067  orth1=0.7730  orth2=0.4688  recon=0.9692
+[epoch 022] train | total=3.3320  mace_cancer=1.9239  mace_noncancer=1.2135  orth1=1.0016  orth2=0.5054  recon=0.9699
+[epoch 022] train | MACE AUC[cancer]=0.877  MACE AUC[non-cancer]=0.737  |  test  | MACE AUC[cancer]=0.596  MACE AUC[non-cancer]=0.643
+[epoch 022] cross-test | train cancer-arm->non-cancer=0.532  noncancer-arm->cancer=0.648  |  test  cancer-arm->non-cancer=0.536  noncancer-arm->cancer=0.660
+[epoch 022] disentanglement | E1->MACE|cancer(sanity, want high)=0.604  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.601  P_noncancer->MACE|cancer(leak, want ~0.5)=0.615  |  cos(E1,P_cancer)=24.751  cos(E1,P_noncancer)=16.624
+[epoch 023] train | total=3.2875  mace_cancer=1.8979  mace_noncancer=1.2183  orth1=0.8560  orth2=0.4367  recon=0.9580
+[epoch 024] train | total=3.0881  mace_cancer=1.7458  mace_noncancer=1.1898  orth1=0.6038  orth2=0.4597  recon=0.9227
+[epoch 024] train | MACE AUC[cancer]=0.933  MACE AUC[non-cancer]=0.748  |  test  | MACE AUC[cancer]=0.610  MACE AUC[non-cancer]=0.658
+[epoch 024] cross-test | train cancer-arm->non-cancer=0.529  noncancer-arm->cancer=0.672  |  test  cancer-arm->non-cancer=0.526  noncancer-arm->cancer=0.648
+[epoch 024] disentanglement | E1->MACE|cancer(sanity, want high)=0.599  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.597  P_noncancer->MACE|cancer(leak, want ~0.5)=0.621  |  cos(E1,P_cancer)=20.805  cos(E1,P_noncancer)=15.628
+[epoch 025] train | total=3.0212  mace_cancer=1.6800  mace_noncancer=1.1841  orth1=0.6375  orth2=0.4640  recon=0.9038
+[epoch 026] train | total=3.0206  mace_cancer=1.6554  mace_noncancer=1.1923  orth1=0.7884  orth2=0.4830  recon=0.8936
+[epoch 026] train | MACE AUC[cancer]=0.936  MACE AUC[non-cancer]=0.747  |  test  | MACE AUC[cancer]=0.588  MACE AUC[non-cancer]=0.656
+[epoch 026] cross-test | train cancer-arm->non-cancer=0.516  noncancer-arm->cancer=0.684  |  test  cancer-arm->non-cancer=0.510  noncancer-arm->cancer=0.645
+[epoch 026] disentanglement | E1->MACE|cancer(sanity, want high)=0.596  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.604  P_noncancer->MACE|cancer(leak, want ~0.5)=0.616  |  cos(E1,P_cancer)=20.029  cos(E1,P_noncancer)=17.522
+[epoch 027] train | total=2.9823  mace_cancer=1.6262  mace_noncancer=1.1876  orth1=0.7586  orth2=0.4612  recon=0.8924
+[epoch 028] train | total=2.9573  mace_cancer=1.5936  mace_noncancer=1.1975  orth1=0.7618  orth2=0.4542  recon=0.8690
+[epoch 028] train | MACE AUC[cancer]=0.943  MACE AUC[non-cancer]=0.755  |  test  | MACE AUC[cancer]=0.582  MACE AUC[non-cancer]=0.653
+[epoch 028] cross-test | train cancer-arm->non-cancer=0.529  noncancer-arm->cancer=0.671  |  test  cancer-arm->non-cancer=0.525  noncancer-arm->cancer=0.641
+[epoch 028] disentanglement | E1->MACE|cancer(sanity, want high)=0.589  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.609  P_noncancer->MACE|cancer(leak, want ~0.5)=0.616  |  cos(E1,P_cancer)=23.543  cos(E1,P_noncancer)=15.896
+[epoch 029] train | total=2.9868  mace_cancer=1.6363  mace_noncancer=1.1753  orth1=0.8803  orth2=0.4367  recon=0.8777
+[epoch 030] train | total=2.8206  mace_cancer=1.4804  mace_noncancer=1.1692  orth1=0.7040  orth2=0.5131  recon=0.8480
+[epoch 030] train | MACE AUC[cancer]=0.930  MACE AUC[non-cancer]=0.759  |  test  | MACE AUC[cancer]=0.606  MACE AUC[non-cancer]=0.653
+[epoch 030] cross-test | train cancer-arm->non-cancer=0.526  noncancer-arm->cancer=0.667  |  test  cancer-arm->non-cancer=0.527  noncancer-arm->cancer=0.655
+[epoch 030] disentanglement | E1->MACE|cancer(sanity, want high)=0.579  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.584  P_noncancer->MACE|cancer(leak, want ~0.5)=0.620  |  cos(E1,P_cancer)=22.782  cos(E1,P_noncancer)=16.076
+[epoch 031] train | total=2.7936  mace_cancer=1.4583  mace_noncancer=1.1720  orth1=0.6908  orth2=0.4483  recon=0.8423
+[epoch 032] train | total=2.9290  mace_cancer=1.5563  mace_noncancer=1.1842  orth1=0.9217  orth2=0.5494  recon=0.8358
+[epoch 032] train | MACE AUC[cancer]=0.927  MACE AUC[non-cancer]=0.760  |  test  | MACE AUC[cancer]=0.609  MACE AUC[non-cancer]=0.656
+[epoch 032] cross-test | train cancer-arm->non-cancer=0.481  noncancer-arm->cancer=0.670  |  test  cancer-arm->non-cancer=0.476  noncancer-arm->cancer=0.654
+[epoch 032] disentanglement | E1->MACE|cancer(sanity, want high)=0.598  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.596  P_noncancer->MACE|cancer(leak, want ~0.5)=0.610  |  cos(E1,P_cancer)=27.443  cos(E1,P_noncancer)=16.576
+[epoch 033] train | total=2.8080  mace_cancer=1.4598  mace_noncancer=1.1584  orth1=0.9024  orth2=0.5023  recon=0.8439
+[epoch 034] train | total=2.6872  mace_cancer=1.3834  mace_noncancer=1.1429  orth1=0.6743  orth2=0.4356  recon=0.7955
+[epoch 034] train | MACE AUC[cancer]=0.918  MACE AUC[non-cancer]=0.766  |  test  | MACE AUC[cancer]=0.582  MACE AUC[non-cancer]=0.650
+[epoch 034] cross-test | train cancer-arm->non-cancer=0.468  noncancer-arm->cancer=0.663  |  test  cancer-arm->non-cancer=0.460  noncancer-arm->cancer=0.648
+[epoch 034] disentanglement | E1->MACE|cancer(sanity, want high)=0.581  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.607  P_noncancer->MACE|cancer(leak, want ~0.5)=0.619  |  cos(E1,P_cancer)=23.850  cos(E1,P_noncancer)=14.436
+[epoch 035] train | total=2.6489  mace_cancer=1.3083  mace_noncancer=1.1662  orth1=0.7465  orth2=0.4758  recon=0.7899
+[epoch 036] train | total=2.9754  mace_cancer=1.6278  mace_noncancer=1.1657  orth1=1.0033  orth2=0.4777  recon=0.8177
+[epoch 036] train | MACE AUC[cancer]=0.912  MACE AUC[non-cancer]=0.760  |  test  | MACE AUC[cancer]=0.599  MACE AUC[non-cancer]=0.658
+[epoch 036] cross-test | train cancer-arm->non-cancer=0.449  noncancer-arm->cancer=0.675  |  test  cancer-arm->non-cancer=0.448  noncancer-arm->cancer=0.633
+[epoch 036] disentanglement | E1->MACE|cancer(sanity, want high)=0.592  E1->MACE|noncancer(sanity, want high)=0.653  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.613  P_noncancer->MACE|cancer(leak, want ~0.5)=0.621  |  cos(E1,P_cancer)=33.321  cos(E1,P_noncancer)=18.475
+[epoch 037] train | total=2.7139  mace_cancer=1.3766  mace_noncancer=1.1535  orth1=0.8524  orth2=0.5196  recon=0.7768
+[epoch 038] train | total=2.4657  mace_cancer=1.1351  mace_noncancer=1.1691  orth1=0.5700  orth2=0.4549  recon=0.7528
+[epoch 038] train | MACE AUC[cancer]=0.978  MACE AUC[non-cancer]=0.779  |  test  | MACE AUC[cancer]=0.588  MACE AUC[non-cancer]=0.647
+[epoch 038] cross-test | train cancer-arm->non-cancer=0.508  noncancer-arm->cancer=0.669  |  test  cancer-arm->non-cancer=0.498  noncancer-arm->cancer=0.640
+[epoch 038] disentanglement | E1->MACE|cancer(sanity, want high)=0.588  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.587  P_noncancer->MACE|cancer(leak, want ~0.5)=0.623  |  cos(E1,P_cancer)=18.740  cos(E1,P_noncancer)=14.448
+[epoch 039] train | total=2.5496  mace_cancer=1.2118  mace_noncancer=1.1521  orth1=0.7651  orth2=0.5213  recon=0.7747
+[epoch 040] train | total=2.4327  mace_cancer=1.0960  mace_noncancer=1.1554  orth1=0.6809  orth2=0.5218  recon=0.7384
+[epoch 040] train | MACE AUC[cancer]=0.958  MACE AUC[non-cancer]=0.783  |  test  | MACE AUC[cancer]=0.602  MACE AUC[non-cancer]=0.648
+[epoch 040] cross-test | train cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.660  |  test  cancer-arm->non-cancer=0.459  noncancer-arm->cancer=0.645
+[epoch 040] disentanglement | E1->MACE|cancer(sanity, want high)=0.586  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.612  P_noncancer->MACE|cancer(leak, want ~0.5)=0.617  |  cos(E1,P_cancer)=26.622  cos(E1,P_noncancer)=15.536
+[epoch 041] train | total=2.4692  mace_cancer=1.1693  mace_noncancer=1.1190  orth1=0.7899  orth2=0.4214  recon=0.7494
+[epoch 042] train | total=2.5558  mace_cancer=1.2544  mace_noncancer=1.1290  orth1=0.7604  orth2=0.4427  recon=0.7386
+[epoch 042] train | MACE AUC[cancer]=0.973  MACE AUC[non-cancer]=0.781  |  test  | MACE AUC[cancer]=0.585  MACE AUC[non-cancer]=0.647
+[epoch 042] cross-test | train cancer-arm->non-cancer=0.483  noncancer-arm->cancer=0.654  |  test  cancer-arm->non-cancer=0.475  noncancer-arm->cancer=0.635
+[epoch 042] disentanglement | E1->MACE|cancer(sanity, want high)=0.575  E1->MACE|noncancer(sanity, want high)=0.653  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.613  P_noncancer->MACE|cancer(leak, want ~0.5)=0.618  |  cos(E1,P_cancer)=21.637  cos(E1,P_noncancer)=14.944
+[epoch 043] train | total=2.3496  mace_cancer=1.0357  mace_noncancer=1.1294  orth1=0.6876  orth2=0.5034  recon=0.7225
+[epoch 044] train | total=2.3147  mace_cancer=1.0032  mace_noncancer=1.1325  orth1=0.6644  orth2=0.4640  recon=0.7106
+[epoch 044] train | MACE AUC[cancer]=0.980  MACE AUC[non-cancer]=0.791  |  test  | MACE AUC[cancer]=0.579  MACE AUC[non-cancer]=0.639
+[epoch 044] cross-test | train cancer-arm->non-cancer=0.481  noncancer-arm->cancer=0.656  |  test  cancer-arm->non-cancer=0.471  noncancer-arm->cancer=0.647
+[epoch 044] disentanglement | E1->MACE|cancer(sanity, want high)=0.581  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.607  P_noncancer->MACE|cancer(leak, want ~0.5)=0.615  |  cos(E1,P_cancer)=19.289  cos(E1,P_noncancer)=13.859
+[epoch 045] train | total=2.1680  mace_cancer=0.8826  mace_noncancer=1.1146  orth1=0.5601  orth2=0.3980  recon=0.7030
+[epoch 046] train | total=2.0229  mace_cancer=0.7652  mace_noncancer=1.0883  orth1=0.4586  orth2=0.3980  recon=0.6914
+[epoch 046] train | MACE AUC[cancer]=0.984  MACE AUC[non-cancer]=0.793  |  test  | MACE AUC[cancer]=0.587  MACE AUC[non-cancer]=0.636
+[epoch 046] cross-test | train cancer-arm->non-cancer=0.480  noncancer-arm->cancer=0.665  |  test  cancer-arm->non-cancer=0.459  noncancer-arm->cancer=0.649
+[epoch 046] disentanglement | E1->MACE|cancer(sanity, want high)=0.576  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.584  P_noncancer->MACE|cancer(leak, want ~0.5)=0.620  |  cos(E1,P_cancer)=16.150  cos(E1,P_noncancer)=14.347
+[epoch 047] train | total=1.9020  mace_cancer=0.6322  mace_noncancer=1.0932  orth1=0.4473  orth2=0.4113  recon=0.6810
+[epoch 048] train | total=2.6332  mace_cancer=1.3046  mace_noncancer=1.1218  orth1=1.0679  orth2=0.5331  recon=0.7072
+[epoch 048] train | MACE AUC[cancer]=0.969  MACE AUC[non-cancer]=0.789  |  test  | MACE AUC[cancer]=0.556  MACE AUC[non-cancer]=0.648
+[epoch 048] cross-test | train cancer-arm->non-cancer=0.469  noncancer-arm->cancer=0.641  |  test  cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.636
+[epoch 048] disentanglement | E1->MACE|cancer(sanity, want high)=0.572  E1->MACE|noncancer(sanity, want high)=0.653  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.621  P_noncancer->MACE|cancer(leak, want ~0.5)=0.618  |  cos(E1,P_cancer)=26.772  cos(E1,P_noncancer)=15.874
+[epoch 049] train | total=2.2075  mace_cancer=0.8881  mace_noncancer=1.1141  orth1=0.7955  orth2=0.5073  recon=0.7114
+[epoch 050] train | total=2.0782  mace_cancer=0.8019  mace_noncancer=1.0912  orth1=0.6048  orth2=0.4539  recon=0.6797
+[epoch 050] train | MACE AUC[cancer]=0.989  MACE AUC[non-cancer]=0.807  |  test  | MACE AUC[cancer]=0.575  MACE AUC[non-cancer]=0.629
+[epoch 050] cross-test | train cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.651  |  test  cancer-arm->non-cancer=0.449  noncancer-arm->cancer=0.633
+[epoch 050] disentanglement | E1->MACE|cancer(sanity, want high)=0.576  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.610  P_noncancer->MACE|cancer(leak, want ~0.5)=0.622  |  cos(E1,P_cancer)=17.607  cos(E1,P_noncancer)=13.868
+[epoch 051] train | total=2.2397  mace_cancer=0.9545  mace_noncancer=1.0867  orth1=0.8290  orth2=0.4563  recon=0.6843
+[epoch 052] train | total=2.1185  mace_cancer=0.8366  mace_noncancer=1.1005  orth1=0.5705  orth2=0.4811  recon=0.6828
+[epoch 052] train | MACE AUC[cancer]=0.992  MACE AUC[non-cancer]=0.803  |  test  | MACE AUC[cancer]=0.569  MACE AUC[non-cancer]=0.627
+[epoch 052] cross-test | train cancer-arm->non-cancer=0.471  noncancer-arm->cancer=0.664  |  test  cancer-arm->non-cancer=0.460  noncancer-arm->cancer=0.642
+[epoch 052] disentanglement | E1->MACE|cancer(sanity, want high)=0.587  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.618  P_noncancer->MACE|cancer(leak, want ~0.5)=0.608  |  cos(E1,P_cancer)=18.164  cos(E1,P_noncancer)=15.227
+[epoch 053] train | total=1.8060  mace_cancer=0.5287  mace_noncancer=1.0932  orth1=0.4548  orth2=0.4619  recon=0.6465
+[epoch 054] train | total=1.8065  mace_cancer=0.5614  mace_noncancer=1.0625  orth1=0.4952  orth2=0.4219  recon=0.6372
+[epoch 054] train | MACE AUC[cancer]=0.993  MACE AUC[non-cancer]=0.818  |  test  | MACE AUC[cancer]=0.584  MACE AUC[non-cancer]=0.628
+[epoch 054] cross-test | train cancer-arm->non-cancer=0.507  noncancer-arm->cancer=0.648  |  test  cancer-arm->non-cancer=0.487  noncancer-arm->cancer=0.647
+[epoch 054] disentanglement | E1->MACE|cancer(sanity, want high)=0.578  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.588  P_noncancer->MACE|cancer(leak, want ~0.5)=0.617  |  cos(E1,P_cancer)=19.684  cos(E1,P_noncancer)=14.338
+[epoch 055] train | total=3.5116  mace_cancer=2.0281  mace_noncancer=1.0969  orth1=3.1136  orth2=0.6417  recon=0.7580
+[epoch 056] train | total=2.6725  mace_cancer=1.3583  mace_noncancer=1.0880  orth1=1.2255  orth2=0.5643  recon=0.7145
+[epoch 056] train | MACE AUC[cancer]=0.966  MACE AUC[non-cancer]=0.804  |  test  | MACE AUC[cancer]=0.581  MACE AUC[non-cancer]=0.641
+[epoch 056] cross-test | train cancer-arm->non-cancer=0.481  noncancer-arm->cancer=0.632  |  test  cancer-arm->non-cancer=0.477  noncancer-arm->cancer=0.626
+[epoch 056] disentanglement | E1->MACE|cancer(sanity, want high)=0.573  E1->MACE|noncancer(sanity, want high)=0.648  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.593  P_noncancer->MACE|cancer(leak, want ~0.5)=0.610  |  cos(E1,P_cancer)=20.215  cos(E1,P_noncancer)=16.027
+[epoch 057] train | total=2.0114  mace_cancer=0.7382  mace_noncancer=1.0774  orth1=0.6857  orth2=0.4655  recon=0.6461
+[epoch 058] train | total=2.2160  mace_cancer=0.9328  mace_noncancer=1.0819  orth1=0.8224  orth2=0.5128  recon=0.6451
+[epoch 058] train | MACE AUC[cancer]=0.983  MACE AUC[non-cancer]=0.820  |  test  | MACE AUC[cancer]=0.579  MACE AUC[non-cancer]=0.631
+[epoch 058] cross-test | train cancer-arm->non-cancer=0.468  noncancer-arm->cancer=0.645  |  test  cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.641
+[epoch 058] disentanglement | E1->MACE|cancer(sanity, want high)=0.569  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.623  P_noncancer->MACE|cancer(leak, want ~0.5)=0.611  |  cos(E1,P_cancer)=25.666  cos(E1,P_noncancer)=17.984
+[epoch 059] train | total=2.0447  mace_cancer=0.7664  mace_noncancer=1.0813  orth1=0.7103  orth2=0.4912  recon=0.6340
+[epoch 060] train | total=2.3413  mace_cancer=1.0880  mace_noncancer=1.0659  orth1=0.7720  orth2=0.5094  recon=0.6452
+[epoch 060] train | MACE AUC[cancer]=0.986  MACE AUC[non-cancer]=0.807  |  test  | MACE AUC[cancer]=0.566  MACE AUC[non-cancer]=0.634
+[epoch 060] cross-test | train cancer-arm->non-cancer=0.506  noncancer-arm->cancer=0.628  |  test  cancer-arm->non-cancer=0.494  noncancer-arm->cancer=0.620
+[epoch 060] disentanglement | E1->MACE|cancer(sanity, want high)=0.578  E1->MACE|noncancer(sanity, want high)=0.653  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.611  P_noncancer->MACE|cancer(leak, want ~0.5)=0.610  |  cos(E1,P_cancer)=20.893  cos(E1,P_noncancer)=18.222
+[epoch 061] train | total=1.9923  mace_cancer=0.7116  mace_noncancer=1.0858  orth1=0.6236  orth2=0.5593  recon=0.6057
+[epoch 062] train | total=1.7851  mace_cancer=0.4813  mace_noncancer=1.1164  orth1=0.4601  orth2=0.5434  recon=0.6021
+[epoch 062] train | MACE AUC[cancer]=0.995  MACE AUC[non-cancer]=0.829  |  test  | MACE AUC[cancer]=0.581  MACE AUC[non-cancer]=0.610
+[epoch 062] cross-test | train cancer-arm->non-cancer=0.470  noncancer-arm->cancer=0.636  |  test  cancer-arm->non-cancer=0.455  noncancer-arm->cancer=0.634
+[epoch 062] disentanglement | E1->MACE|cancer(sanity, want high)=0.578  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.612  P_noncancer->MACE|cancer(leak, want ~0.5)=0.613  |  cos(E1,P_cancer)=16.323  cos(E1,P_noncancer)=14.402
+[epoch 063] train | total=1.6312  mace_cancer=0.3901  mace_noncancer=1.0661  orth1=0.3923  orth2=0.4209  recon=0.5883
+[epoch 064] train | total=1.6338  mace_cancer=0.4365  mace_noncancer=1.0188  orth1=0.4542  orth2=0.3921  recon=0.5950
+[epoch 064] train | MACE AUC[cancer]=0.989  MACE AUC[non-cancer]=0.827  |  test  | MACE AUC[cancer]=0.588  MACE AUC[non-cancer]=0.641
+[epoch 064] cross-test | train cancer-arm->non-cancer=0.471  noncancer-arm->cancer=0.622  |  test  cancer-arm->non-cancer=0.452  noncancer-arm->cancer=0.615
+[epoch 064] disentanglement | E1->MACE|cancer(sanity, want high)=0.574  E1->MACE|noncancer(sanity, want high)=0.654  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.599  P_noncancer->MACE|cancer(leak, want ~0.5)=0.616  |  cos(E1,P_cancer)=18.179  cos(E1,P_noncancer)=16.515
+[epoch 065] train | total=1.8073  mace_cancer=0.5794  mace_noncancer=1.0379  orth1=0.5870  orth2=0.4644  recon=0.6095
+[epoch 066] train | total=2.5382  mace_cancer=1.2761  mace_noncancer=1.0315  orth1=1.2833  orth2=0.5228  recon=0.6196
+[epoch 066] train | MACE AUC[cancer]=0.963  MACE AUC[non-cancer]=0.820  |  test  | MACE AUC[cancer]=0.573  MACE AUC[non-cancer]=0.626
+[epoch 066] cross-test | train cancer-arm->non-cancer=0.506  noncancer-arm->cancer=0.630  |  test  cancer-arm->non-cancer=0.503  noncancer-arm->cancer=0.624
+[epoch 066] disentanglement | E1->MACE|cancer(sanity, want high)=0.583  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.616  P_noncancer->MACE|cancer(leak, want ~0.5)=0.613  |  cos(E1,P_cancer)=26.446  cos(E1,P_noncancer)=18.176
+[epoch 067] train | total=1.9975  mace_cancer=0.7478  mace_noncancer=1.0305  orth1=0.8622  orth2=0.5650  recon=0.6127
+[epoch 068] train | total=1.7500  mace_cancer=0.5560  mace_noncancer=1.0155  orth1=0.5015  orth2=0.4371  recon=0.5909
+[epoch 068] train | MACE AUC[cancer]=0.994  MACE AUC[non-cancer]=0.819  |  test  | MACE AUC[cancer]=0.574  MACE AUC[non-cancer]=0.645
+[epoch 068] cross-test | train cancer-arm->non-cancer=0.492  noncancer-arm->cancer=0.638  |  test  cancer-arm->non-cancer=0.477  noncancer-arm->cancer=0.621
+[epoch 068] disentanglement | E1->MACE|cancer(sanity, want high)=0.577  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.610  P_noncancer->MACE|cancer(leak, want ~0.5)=0.621  |  cos(E1,P_cancer)=16.742  cos(E1,P_noncancer)=16.200
+[epoch 069] train | total=2.5509  mace_cancer=1.2772  mace_noncancer=1.0405  orth1=1.3139  orth2=0.5402  recon=0.6011
+[epoch 070] train | total=2.3558  mace_cancer=1.0910  mace_noncancer=1.0433  orth1=1.0730  orth2=0.5510  recon=0.6264
+[epoch 070] train | MACE AUC[cancer]=0.993  MACE AUC[non-cancer]=0.837  |  test  | MACE AUC[cancer]=0.552  MACE AUC[non-cancer]=0.612
+[epoch 070] cross-test | train cancer-arm->non-cancer=0.486  noncancer-arm->cancer=0.639  |  test  cancer-arm->non-cancer=0.478  noncancer-arm->cancer=0.630
+[epoch 070] disentanglement | E1->MACE|cancer(sanity, want high)=0.571  E1->MACE|noncancer(sanity, want high)=0.656  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.599  P_noncancer->MACE|cancer(leak, want ~0.5)=0.612  |  cos(E1,P_cancer)=21.814  cos(E1,P_noncancer)=17.282
+[epoch 071] train | total=1.5965  mace_cancer=0.3891  mace_noncancer=1.0189  orth1=0.5347  orth2=0.4504  recon=0.5733
+[epoch 072] train | total=1.4284  mace_cancer=0.2722  mace_noncancer=0.9872  orth1=0.3805  orth2=0.3713  recon=0.5529
+[epoch 072] train | MACE AUC[cancer]=0.998  MACE AUC[non-cancer]=0.850  |  test  | MACE AUC[cancer]=0.582  MACE AUC[non-cancer]=0.639
+[epoch 072] cross-test | train cancer-arm->non-cancer=0.471  noncancer-arm->cancer=0.652  |  test  cancer-arm->non-cancer=0.455  noncancer-arm->cancer=0.614
+[epoch 072] disentanglement | E1->MACE|cancer(sanity, want high)=0.582  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.603  P_noncancer->MACE|cancer(leak, want ~0.5)=0.623  |  cos(E1,P_cancer)=15.153  cos(E1,P_noncancer)=13.803
+[epoch 073] train | total=1.3943  mace_cancer=0.2400  mace_noncancer=0.9782  orth1=0.4075  orth2=0.4269  recon=0.5480
+[epoch 074] train | total=1.3840  mace_cancer=0.2299  mace_noncancer=0.9841  orth1=0.3957  orth2=0.4107  recon=0.5437
+[epoch 074] train | MACE AUC[cancer]=0.999  MACE AUC[non-cancer]=0.846  |  test  | MACE AUC[cancer]=0.564  MACE AUC[non-cancer]=0.626
+[epoch 074] cross-test | train cancer-arm->non-cancer=0.490  noncancer-arm->cancer=0.643  |  test  cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.618
+[epoch 074] disentanglement | E1->MACE|cancer(sanity, want high)=0.569  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.597  P_noncancer->MACE|cancer(leak, want ~0.5)=0.617  |  cos(E1,P_cancer)=14.345  cos(E1,P_noncancer)=13.529
+[epoch 075] train | total=1.3663  mace_cancer=0.1853  mace_noncancer=1.0123  orth1=0.3889  orth2=0.4381  recon=0.5404
+[epoch 076] train | total=1.2941  mace_cancer=0.1571  mace_noncancer=0.9743  orth1=0.3669  orth2=0.4059  recon=0.5332
+[epoch 076] train | MACE AUC[cancer]=0.999  MACE AUC[non-cancer]=0.850  |  test  | MACE AUC[cancer]=0.580  MACE AUC[non-cancer]=0.623
+[epoch 076] cross-test | train cancer-arm->non-cancer=0.467  noncancer-arm->cancer=0.645  |  test  cancer-arm->non-cancer=0.445  noncancer-arm->cancer=0.614
+[epoch 076] disentanglement | E1->MACE|cancer(sanity, want high)=0.576  E1->MACE|noncancer(sanity, want high)=0.652  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.581  P_noncancer->MACE|cancer(leak, want ~0.5)=0.612  |  cos(E1,P_cancer)=13.566  cos(E1,P_noncancer)=13.327
+[epoch 077] train | total=1.8146  mace_cancer=0.6490  mace_noncancer=0.9736  orth1=0.7124  orth2=0.5011  recon=0.5598
+[epoch 078] train | total=1.9919  mace_cancer=0.7702  mace_noncancer=0.9975  orth1=1.0165  orth2=0.5565  recon=0.5787
+[epoch 078] train | MACE AUC[cancer]=0.976  MACE AUC[non-cancer]=0.845  |  test  | MACE AUC[cancer]=0.583  MACE AUC[non-cancer]=0.626
+[epoch 078] cross-test | train cancer-arm->non-cancer=0.488  noncancer-arm->cancer=0.622  |  test  cancer-arm->non-cancer=0.477  noncancer-arm->cancer=0.621
+[epoch 078] disentanglement | E1->MACE|cancer(sanity, want high)=0.581  E1->MACE|noncancer(sanity, want high)=0.655  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.625  P_noncancer->MACE|cancer(leak, want ~0.5)=0.615  |  cos(E1,P_cancer)=26.599  cos(E1,P_noncancer)=16.919
+[epoch 079] train | total=2.4928  mace_cancer=1.2512  mace_noncancer=0.9904  orth1=1.3838  orth2=0.5599  recon=0.6099
+[epoch 080] train | total=1.9640  mace_cancer=0.7572  mace_noncancer=0.9788  orth1=1.0193  orth2=0.5795  recon=0.5803
+[epoch 080] train | MACE AUC[cancer]=0.992  MACE AUC[non-cancer]=0.866  |  test  | MACE AUC[cancer]=0.559  MACE AUC[non-cancer]=0.598
+[epoch 080] cross-test | train cancer-arm->non-cancer=0.520  noncancer-arm->cancer=0.636  |  test  cancer-arm->non-cancer=0.513  noncancer-arm->cancer=0.617
+[epoch 080] disentanglement | E1->MACE|cancer(sanity, want high)=0.571  E1->MACE|noncancer(sanity, want high)=0.646  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.602  P_noncancer->MACE|cancer(leak, want ~0.5)=0.615  |  cos(E1,P_cancer)=21.764  cos(E1,P_noncancer)=15.679
+[epoch 081] train | total=1.7627  mace_cancer=0.6426  mace_noncancer=0.9386  orth1=0.6595  orth2=0.4567  recon=0.5495
+[epoch 082] train | total=1.4829  mace_cancer=0.3807  mace_noncancer=0.9358  orth1=0.4868  orth2=0.4277  recon=0.5451
+[epoch 082] train | MACE AUC[cancer]=0.990  MACE AUC[non-cancer]=0.864  |  test  | MACE AUC[cancer]=0.575  MACE AUC[non-cancer]=0.617
+[epoch 082] cross-test | train cancer-arm->non-cancer=0.465  noncancer-arm->cancer=0.640  |  test  cancer-arm->non-cancer=0.457  noncancer-arm->cancer=0.621
+[epoch 082] disentanglement | E1->MACE|cancer(sanity, want high)=0.581  E1->MACE|noncancer(sanity, want high)=0.649  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.601  P_noncancer->MACE|cancer(leak, want ~0.5)=0.612  |  cos(E1,P_cancer)=18.229  cos(E1,P_noncancer)=16.084
+[epoch 083] train | total=1.3931  mace_cancer=0.2812  mace_noncancer=0.9487  orth1=0.4570  orth2=0.4405  recon=0.5356
+[epoch 084] train | total=1.2633  mace_cancer=0.2062  mace_noncancer=0.9073  orth1=0.3806  orth2=0.3950  recon=0.5169
+[epoch 084] train | MACE AUC[cancer]=0.999  MACE AUC[non-cancer]=0.869  |  test  | MACE AUC[cancer]=0.584  MACE AUC[non-cancer]=0.622
+[epoch 084] cross-test | train cancer-arm->non-cancer=0.479  noncancer-arm->cancer=0.641  |  test  cancer-arm->non-cancer=0.463  noncancer-arm->cancer=0.595
+[epoch 084] disentanglement | E1->MACE|cancer(sanity, want high)=0.580  E1->MACE|noncancer(sanity, want high)=0.651  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.602  P_noncancer->MACE|cancer(leak, want ~0.5)=0.610  |  cos(E1,P_cancer)=13.656  cos(E1,P_noncancer)=13.404
+[epoch 085] train | total=1.2214  mace_cancer=0.1501  mace_noncancer=0.9223  orth1=0.3789  orth2=0.4180  recon=0.5198
+[epoch 086] train | total=1.1683  mace_cancer=0.1131  mace_noncancer=0.9189  orth1=0.3309  orth2=0.3788  recon=0.5095
+[epoch 086] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.868  |  test  | MACE AUC[cancer]=0.570  MACE AUC[non-cancer]=0.624
+[epoch 086] cross-test | train cancer-arm->non-cancer=0.468  noncancer-arm->cancer=0.633  |  test  cancer-arm->non-cancer=0.448  noncancer-arm->cancer=0.607
+[epoch 086] disentanglement | E1->MACE|cancer(sanity, want high)=0.569  E1->MACE|noncancer(sanity, want high)=0.647  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.577  P_noncancer->MACE|cancer(leak, want ~0.5)=0.612  |  cos(E1,P_cancer)=12.920  cos(E1,P_noncancer)=13.140
+[epoch 087] train | total=1.2660  mace_cancer=0.2076  mace_noncancer=0.9053  orth1=0.4646  orth2=0.4476  recon=0.5143
+[epoch 088] train | total=1.2432  mace_cancer=0.1914  mace_noncancer=0.9078  orth1=0.4455  orth2=0.4102  recon=0.5126
+[epoch 088] train | MACE AUC[cancer]=0.999  MACE AUC[non-cancer]=0.882  |  test  | MACE AUC[cancer]=0.572  MACE AUC[non-cancer]=0.610
+[epoch 088] cross-test | train cancer-arm->non-cancer=0.468  noncancer-arm->cancer=0.633  |  test  cancer-arm->non-cancer=0.451  noncancer-arm->cancer=0.608
+[epoch 088] disentanglement | E1->MACE|cancer(sanity, want high)=0.577  E1->MACE|noncancer(sanity, want high)=0.648  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.604  P_noncancer->MACE|cancer(leak, want ~0.5)=0.604  |  cos(E1,P_cancer)=14.314  cos(E1,P_noncancer)=13.867
+[epoch 089] train | total=1.2312  mace_cancer=0.1660  mace_noncancer=0.9246  orth1=0.4292  orth2=0.4417  recon=0.5025
+[epoch 090] train | total=1.1188  mace_cancer=0.1053  mace_noncancer=0.8891  orth1=0.3569  orth2=0.3772  recon=0.5030
+[epoch 090] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.885  |  test  | MACE AUC[cancer]=0.563  MACE AUC[non-cancer]=0.603
+[epoch 090] cross-test | train cancer-arm->non-cancer=0.451  noncancer-arm->cancer=0.624  |  test  cancer-arm->non-cancer=0.438  noncancer-arm->cancer=0.603
+[epoch 090] disentanglement | E1->MACE|cancer(sanity, want high)=0.574  E1->MACE|noncancer(sanity, want high)=0.649  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.597  P_noncancer->MACE|cancer(leak, want ~0.5)=0.607  |  cos(E1,P_cancer)=13.256  cos(E1,P_noncancer)=12.369
+[epoch 091] train | total=1.0780  mace_cancer=0.0837  mace_noncancer=0.8725  orth1=0.3497  orth2=0.4066  recon=0.4910
+[epoch 092] train | total=1.0716  mace_cancer=0.0566  mace_noncancer=0.8969  orth1=0.3618  orth2=0.4074  recon=0.4903
+[epoch 092] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.873  |  test  | MACE AUC[cancer]=0.566  MACE AUC[non-cancer]=0.609
+[epoch 092] cross-test | train cancer-arm->non-cancer=0.458  noncancer-arm->cancer=0.627  |  test  cancer-arm->non-cancer=0.442  noncancer-arm->cancer=0.599
+[epoch 092] disentanglement | E1->MACE|cancer(sanity, want high)=0.568  E1->MACE|noncancer(sanity, want high)=0.647  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.580  P_noncancer->MACE|cancer(leak, want ~0.5)=0.607  |  cos(E1,P_cancer)=12.417  cos(E1,P_noncancer)=14.646
+[epoch 093] train | total=1.1193  mace_cancer=0.0552  mace_noncancer=0.9465  orth1=0.3569  orth2=0.4616  recon=0.4868
+[epoch 094] train | total=1.0517  mace_cancer=0.0663  mace_noncancer=0.8725  orth1=0.3751  orth2=0.4203  recon=0.4873
+[epoch 094] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.888  |  test  | MACE AUC[cancer]=0.561  MACE AUC[non-cancer]=0.595
+[epoch 094] cross-test | train cancer-arm->non-cancer=0.464  noncancer-arm->cancer=0.630  |  test  cancer-arm->non-cancer=0.442  noncancer-arm->cancer=0.611
+[epoch 094] disentanglement | E1->MACE|cancer(sanity, want high)=0.569  E1->MACE|noncancer(sanity, want high)=0.648  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.584  P_noncancer->MACE|cancer(leak, want ~0.5)=0.613  |  cos(E1,P_cancer)=13.092  cos(E1,P_noncancer)=13.334
+[epoch 095] train | total=1.0013  mace_cancer=0.0453  mace_noncancer=0.8529  orth1=0.3563  orth2=0.3920  recon=0.4793
+[epoch 096] train | total=0.9820  mace_cancer=0.0390  mace_noncancer=0.8442  orth1=0.3674  orth2=0.3832  recon=0.4769
+[epoch 096] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.894  |  test  | MACE AUC[cancer]=0.567  MACE AUC[non-cancer]=0.603
+[epoch 096] cross-test | train cancer-arm->non-cancer=0.462  noncancer-arm->cancer=0.624  |  test  cancer-arm->non-cancer=0.439  noncancer-arm->cancer=0.605
+[epoch 096] disentanglement | E1->MACE|cancer(sanity, want high)=0.574  E1->MACE|noncancer(sanity, want high)=0.645  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.586  P_noncancer->MACE|cancer(leak, want ~0.5)=0.611  |  cos(E1,P_cancer)=12.265  cos(E1,P_noncancer)=12.996
+[epoch 097] train | total=0.9655  mace_cancer=0.0339  mace_noncancer=0.8393  orth1=0.3391  orth2=0.3943  recon=0.4751
+[epoch 098] train | total=0.9409  mace_cancer=0.0313  mace_noncancer=0.8247  orth1=0.3270  orth2=0.3799  recon=0.4710
+[epoch 098] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.887  |  test  | MACE AUC[cancer]=0.566  MACE AUC[non-cancer]=0.547
+[epoch 098] cross-test | train cancer-arm->non-cancer=0.464  noncancer-arm->cancer=0.628  |  test  cancer-arm->non-cancer=0.444  noncancer-arm->cancer=0.624
+[epoch 098] disentanglement | E1->MACE|cancer(sanity, want high)=0.572  E1->MACE|noncancer(sanity, want high)=0.647  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.575  P_noncancer->MACE|cancer(leak, want ~0.5)=0.607  |  cos(E1,P_cancer)=11.735  cos(E1,P_noncancer)=13.631
+[epoch 099] train | total=0.9997  mace_cancer=0.0355  mace_noncancer=0.8841  orth1=0.2996  orth2=0.3981  recon=0.4747
+[epoch 100] train | total=0.9464  mace_cancer=0.0298  mace_noncancer=0.8397  orth1=0.3298  orth2=0.3845  recon=0.4695
+[epoch 100] train | MACE AUC[cancer]=1.000  MACE AUC[non-cancer]=0.895  |  test  | MACE AUC[cancer]=0.567  MACE AUC[non-cancer]=0.561
+[epoch 100] cross-test | train cancer-arm->non-cancer=0.456  noncancer-arm->cancer=0.615  |  test  cancer-arm->non-cancer=0.436  noncancer-arm->cancer=0.608
+[epoch 100] disentanglement | E1->MACE|cancer(sanity, want high)=0.574  E1->MACE|noncancer(sanity, want high)=0.645  |  P_cancer->MACE|noncancer(leak, want ~0.5)=0.582  P_noncancer->MACE|cancer(leak, want ~0.5)=0.610  |  cos(E1,P_cancer)=11.667  cos(E1,P_noncancer)=13.152
