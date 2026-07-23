@@ -23,7 +23,9 @@ def train_cox_model(
     save_dir=None,
     plot_km=True,
     plot_groups=[2],
-    verbose=True
+    verbose=True,
+    percentiles=None,
+    penalizer=None
 ):
     train_df = train_df.copy()
     test_df = test_df.copy()
@@ -35,7 +37,7 @@ def train_cox_model(
     # -------------------------------
     # 1. Fit Cox model
     # -------------------------------
-    cph = CoxPHFitter()
+    cph = CoxPHFitter(penalizer=penalizer)
     cph.fit(
         train_df[[time_col, event_col] + selected_features],
         duration_col=time_col,
@@ -47,7 +49,10 @@ def train_cox_model(
     # -------------------------------
     train_df["risk_score"] = cph.predict_log_partial_hazard(train_df[selected_features])
     test_df["risk_score"] = cph.predict_log_partial_hazard(test_df[selected_features])
-
+    
+    # zscore normalization of risk scores
+    train_df["risk_score"] = (train_df["risk_score"] - train_df["risk_score"].mean()) / train_df["risk_score"].std()
+    test_df["risk_score"] = (test_df["risk_score"] - test_df["risk_score"].mean()) / test_df["risk_score"].std()
 
     coef = cph.params_.sort_values()
     plt.figure(figsize=(6, 4))
@@ -104,8 +109,12 @@ def train_cox_model(
 
     plt.axvline(1.0, color="black", linestyle="-", linewidth=0.8, alpha=0.8)
     plt.tight_layout()
-    plt.show()
-        
+    if verbose:
+        plt.show()
+    else:
+        plt.close()
+
+    results = None
     for group_count in plot_groups:
         results = compare_quantile_logrank(
             train_df,
@@ -116,7 +125,9 @@ def train_cox_model(
             n_groups=group_count,
             plot_km=plot_km,
             verbose=verbose,
-            km_figsize=(2, 2),
+            km_figsize=(1, 1),
+            percentiles=percentiles
+            
         )
     
 
@@ -145,6 +156,7 @@ def do_multivar(
         duration_col=time_col,
         event_col=event_col
     )
+    
     
     forest_df = cph.summary.reset_index().rename(
         columns={

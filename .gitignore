@@ -8,3 +8,5 @@ src/__pycache__/
 outputs_refactored/
 
 src/__pycache__
+
+*.pyc

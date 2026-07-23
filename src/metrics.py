@@ -410,96 +410,71 @@ def subgroup_cox(
     """
     Estimate the score association separately within each subgroup.
 
-    The same generic adjustment set is requested for every level.
-    adjusted_cox() automatically removes variables that become
-    constant within a particular subgroup.
+    Each level is fit with train_cox_model(), reusing its Cox fit and
+    forest_df summary. Covariates that are constant within a level
+    (e.g. sex inside a sex subgroup) are dropped before fitting.
     """
+    from src2.train import train_cox_model
 
     if covariates is None:
-        covariates = [
-            "age",
-            "female",
-            "height",
-            "HTN",
-            "Diabetes",
-        ]
+        covariates = ["age", "female", "height", "HTN", "Diabetes"]
 
     if subgroup_column not in df.columns:
-        raise KeyError(
-            f"Subgroup column not found: {subgroup_column}"
-        )
+        raise KeyError(f"Subgroup column not found: {subgroup_column}")
+
+    analysis_columns = list(dict.fromkeys(["time_years", "Y_mace", score_column, *covariates]))
 
     rows = []
 
-    for level, subset in df.groupby(
-        subgroup_column,
-        observed=True,
-        dropna=True,
-    ):
-        analysis_columns = [
-            "time_years",
-            "Y_mace",
-            score_column,
-            *covariates,
-        ]
-
-        analysis_columns = list(
-            dict.fromkeys(analysis_columns)
-        )
-
+    for level, subset in df.groupby(subgroup_column, observed=True, dropna=True):
         complete_subset = (
             subset[analysis_columns]
             .replace([np.inf, -np.inf], np.nan)
             .dropna()
         )
 
-        events = int(
-            complete_subset["Y_mace"].sum()
-        )
+        events = int(complete_subset["Y_mace"].sum())
 
         if events < minimum_events:
             continue
 
-        if (
-            complete_subset[score_column]
-            .nunique(dropna=True)
-            < 2
-        ):
+        if complete_subset[score_column].nunique(dropna=True) < 2:
             continue
 
-        summary, _ = adjusted_cox(
-            subset,
-            score_column=score_column,
-            covariates=covariates,
+        varying_covariates = [
+            c for c in covariates
+            if complete_subset[c].nunique(dropna=True) >= 2
+            and complete_subset[c].var(ddof=0) > 1e-12
+        ]
+        dropped_constant = [c for c in covariates if c not in varying_covariates]
+
+        result = train_cox_model(
+            complete_subset,
+            complete_subset,
+            selected_features=[score_column, *varying_covariates],
+            time_col="time_years",
+            event_col="Y_mace",
             penalizer=penalizer,
+            verbose=False,
+            plot_km=False,
         )
 
-        score_row = summary.loc[
-            summary["term"] == score_column
+        score_row = result["forest_df"].loc[
+            result["forest_df"]["covariate"] == score_column
         ].iloc[0]
 
         rows.append(
             {
                 "subgroup": subgroup_column,
                 "level": str(level),
-                "N": int(score_row["N"]),
-                "events": int(
-                    score_row["events"]
-                ),
-                "HR": float(score_row["HR"]),
-                "HR_low": float(
-                    score_row["HR_low"]
-                ),
-                "HR_high": float(
-                    score_row["HR_high"]
-                ),
-                "p": float(score_row["p"]),
-                "adjusted_for": score_row[
-                    "adjusted_for"
-                ],
-                "dropped_constant": score_row[
-                    "dropped_constant"
-                ],
+                "N": len(complete_subset),
+                "events": events,
+                "HR": float(score_row["hr"]),
+                "HR_low": float(score_row["ci_low"]),
+                "HR_high": float(score_row["ci_high"]),
+                "p": float(score_row["p_value"]),
+                "adjusted_for": ", ".join(varying_covariates),
+                "dropped_constant": ", ".join(dropped_constant),
             }
         )
 
