@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from lifelines import CoxPHFitter
 from scipy.stats import norm
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold
 from lifelines.utils import concordance_index
 
@@ -145,6 +146,71 @@ def rank_features(
             )
 
     return pd.DataFrame(rows).sort_values("abs_z", ascending=False).reset_index(drop=True)
+
+
+def rank_features2(
+    df: pd.DataFrame,
+    feature_columns: list[str],
+    mode: str = "cox",
+    penalizer: float = 0.01,
+    l1_ratio: float = 0.5,
+) -> pd.DataFrame:
+    """Rank features via univariate regression, fitting library models directly.
+
+    mode="cox" fits a lifelines CoxPHFitter per feature against
+    time_years/Y_mace. mode="elasticnet" fits a sklearn LogisticRegression
+    with an elasticnet penalty per feature against Y_mace. Unlike
+    rank_features, this calls the library models directly instead of the
+    hand-rolled Newton-Raphson Cox routine, so it is slower but useful as a
+    reference/validation check.
+    """
+    usable = _usable_features(df, feature_columns)
+    matrix, _, _, _ = _standardized_matrix(df, usable)
+    time = pd.to_numeric(df["time_years"], errors="raise").to_numpy(dtype=float)
+    event = pd.to_numeric(df["Y_mace"], errors="raise").to_numpy(dtype=int)
+
+    if mode == "elasticnet":
+        rows = []
+        for index, column in enumerate(usable):
+            model = LogisticRegression(
+                penalty="elasticnet",
+                solver="saga",
+                l1_ratio=l1_ratio,
+                C=1.0 / penalizer,
+                max_iter=1000,
+            )
+            model.fit(matrix[:, [index]], event)
+            coef = float(model.coef_[0, 0])
+            rows.append({"feature": column, "coef": coef, "abs_coef": abs(coef)})
+        return pd.DataFrame(rows).sort_values("abs_coef", ascending=False).reset_index(drop=True)
+
+    if mode == "cox":
+        rows = []
+        for index, column in enumerate(usable):
+            fit_data = pd.DataFrame(
+                {column: matrix[:, index], "time_years": time, "Y_mace": event}
+            )
+            cox_model = CoxPHFitter(penalizer=penalizer)
+            cox_model.fit(
+                fit_data,
+                duration_col="time_years",
+                event_col="Y_mace",
+                show_progress=False,
+            )
+            summary = cox_model.summary.loc[column]
+            rows.append(
+                {
+                    "feature": column,
+                    "coef": float(summary["coef"]),
+                    "se": float(summary["se(coef)"]),
+                    "z": float(summary["z"]),
+                    "abs_z": abs(float(summary["z"])),
+                    "p": float(summary["p"]),
+                }
+            )
+        return pd.DataFrame(rows).sort_values("abs_z", ascending=False).reset_index(drop=True)
+
+    raise ValueError("mode must be either 'cox' or 'elasticnet'.")
 
 
 def _design_from_training(df: pd.DataFrame, model: LockedCoxModel) -> pd.DataFrame:
@@ -375,6 +441,10 @@ def tune_model_cv(
             if n_features > len(ranking):
                 continue
             for penalizer in candidate_penalizers:
+                
+                # top features
+                top_ranked_features = ranking.head(n_features)["feature"].tolist()
+                
                 model = fit_model_from_ranking(
                     development,
                     ranking,
@@ -394,6 +464,7 @@ def tune_model_cv(
                         "n_features": int(n_features),
                         "penalizer": float(penalizer),
                         "C_index": float(c_value),
+                        "top_features": top_ranked_features,
                     }
                 )
 
