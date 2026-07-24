@@ -336,3 +336,240 @@ def compare_quantile_logrank(
             plt.show()
 
     return out
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.colors import TwoSlopeNorm
+from adjustText import adjust_text
+
+sns.set_style("white")
+
+
+def plot_reclassification_Ribbonplot(df, new_col, event_col, baseline_col, n_quantiles=3,
+                       baseline_label=None, new_label=None, figsize=(11, 7)):
+    """Flow diagram showing how subjects move between quantile bins of
+    `baseline_col` (left) and `new_col` (right), colored by event-rate
+    enrichment (pp) vs the source bin's own rate. Ribbon labels are
+    auto-positioned with adjustText to avoid overlapping, with leader
+    lines back to their ribbon's midpoint when moved."""
+
+    baseline_label = baseline_label or baseline_col
+    new_label = new_label or new_col
+
+    d = df[[baseline_col, new_col, event_col]].dropna().copy()
+    d["L"] = pd.qcut(d[baseline_col], n_quantiles, labels=False, duplicates="drop") + 1
+    d["R"] = pd.qcut(d[new_col], n_quantiles, labels=False, duplicates="drop") + 1
+    n_bins = d["L"].nunique()
+
+    left = d.groupby("L").agg(N=(event_col, "size"), rate=(event_col, "mean"))
+    right = d.groupby("R").agg(N=(event_col, "size"), rate=(event_col, "mean"))
+    flow = d.groupby(["L", "R"]).agg(N=(event_col, "size"), rate=(event_col, "mean")).reset_index()
+    flow["pp"] = (flow["rate"] - flow["L"].map(left["rate"])) * 100
+
+    def positions(stats, gap=0.03):
+        avail = 1 - gap * (n_bins - 1)
+        h = stats["N"] / stats["N"].sum() * avail
+        pos, y = {}, 1.0
+        for i in stats.index:
+            pos[i] = (y - h[i], y)
+            y -= h[i] + gap
+        return pos
+
+    lpos, rpos = positions(left), positions(right)
+    x_lblock, x_rblock = (0.06, 0.09), (0.91, 0.94)
+    xm_base = (x_lblock[1] + x_rblock[0]) / 2
+
+    cmap = sns.color_palette("RdBu_r", as_cmap=True)
+    norm = TwoSlopeNorm(vmin=-8, vcenter=0, vmax=8)
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    def ribbon(y0_bot, y0_top, y1_bot, y1_top, color):
+        x = np.linspace(x_lblock[1], x_rblock[0], 60)
+        s = (1 - np.cos(np.pi * (x - x[0]) / (x[-1] - x[0]))) / 2
+        ax.fill_between(x, y0_bot + (y1_bot - y0_bot) * s,
+                         y0_top + (y1_top - y0_top) * s,
+                         color=color, alpha=0.75, linewidth=0)
+
+    lcur = {i: lpos[i][1] for i in lpos}
+    rcur = {i: rpos[i][1] for i in rpos}
+    flow_texts = []
+
+    for _, row in flow.sort_values(["L", "R"]).iterrows():
+        l, r = row["L"], row["R"]
+        h_l = (lpos[l][1] - lpos[l][0]) * row["N"] / left.loc[l, "N"]
+        h_r = (rpos[r][1] - rpos[r][0]) * row["N"] / right.loc[r, "N"]
+        y0_top, y0_bot = lcur[l], lcur[l] - h_l
+        y1_top, y1_bot = rcur[r], rcur[r] - h_r
+        lcur[l], rcur[r] = y0_bot, y1_bot
+
+        color = cmap(norm(row["pp"]))
+        ribbon(y0_bot, y0_top, y1_bot, y1_top, color)
+
+        ym = (y0_top + y0_bot + y1_top + y1_bot) / 4
+        sign = "+" if row["pp"] >= 0 else ""
+        flow_texts.append(ax.text(
+            xm_base, ym, f"N={int(row.N):,}; {row.rate*100:.1f}%\n{sign}{row.pp:.1f} pp",
+            ha="center", va="center", fontsize=8.5, zorder=2,
+            bbox=dict(facecolor="white", edgecolor="none", alpha=0.75, pad=1.5)))
+
+    for stats, pos, xb, color, label, ha, xt in [
+        (left, lpos, x_lblock, "#E88A3A", baseline_label, "right", x_lblock[0] - 0.01),
+        (right, rpos, x_rblock, "#3355CC", new_label, "left", x_rblock[1] + 0.01),
+    ]:
+        for i, (y0, y1) in pos.items():
+            ax.add_patch(plt.Rectangle((xb[0], y0), xb[1] - xb[0], y1 - y0,
+                                        facecolor=color, alpha=0.35, edgecolor=color, linewidth=1.5))
+            ax.text(xt, (y0 + y1) / 2,
+                    f"{label} tertile {i}\nN={int(stats.loc[i,'N']):,}; {event_col} {stats.loc[i,'rate']*100:.1f}%",
+                    ha=ha, va="center", fontsize=10, fontweight="bold", color=color)
+        ax.text(sum(xb) / 2, 1.04, f"{label}\ntertiles", ha="center", va="bottom",
+                fontsize=13, fontweight="bold", color=color)
+
+    ax.set_xlim(-0.4, 1.4)
+    ax.set_ylim(-0.05, 1.15)
+    ax.axis("off")
+
+    # resolve overlaps among ribbon labels; adjust_text must run last, once
+    # axes limits are final, and draws leader lines back to labels it moves
+    adjust_text(flow_texts, ax=ax,
+                arrowprops=dict(arrowstyle="-", color="gray", lw=0.6, alpha=0.6, shrinkA=0, shrinkB=0))
+
+    sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
+    cbar = fig.colorbar(sm, ax=ax, orientation="horizontal", fraction=0.05, pad=0.05, shrink=0.5)
+    cbar.set_label(f"{event_col} enrichment vs {baseline_label} tertile, pp")
+
+    plt.tight_layout()
+    return {"flows": flow, "left_stats": left, "right_stats": right, "fig": fig, "ax": ax}
+
+
+from typing import Optional, Sequence, Union
+
+def subgroup_forestplots(
+    df: pd.DataFrame,
+    score_column: str,
+    subgroup_columns: Union[str, Sequence[str]],
+    minimum_events: int = 20,
+    covariates: Optional[list[str]] = None,
+    penalizer: float = 0.01,
+    group_order: Optional[Sequence[str]] = None,
+    xlabel: Optional[str] = None,
+    table: bool = False,
+    figsize: Optional[tuple] = None,
+) -> dict:
+    """
+    Estimate the score association separately within each level of one or
+    more subgroup columns, then render the results with forestplot.forestplot()
+    as a subgroup forest plot (rows = levels, grouped by subgroup column).
+
+    Each level is fit with train_cox_model(), reusing its Cox fit and
+    forest_df summary. Covariates that are constant within a level
+    (e.g. sex inside a sex subgroup) are dropped before fitting.
+    """
+    from src2.train import train_cox_model
+
+    if isinstance(subgroup_columns, str):
+        subgroup_columns = [subgroup_columns]
+
+    if covariates is None:
+        covariates = ["age", "female", "height", "HTN", "Diabetes"]
+
+    rows = []
+
+    for subgroup_column in subgroup_columns:
+        if subgroup_column not in df.columns:
+            raise KeyError(f"Subgroup column not found: {subgroup_column}")
+
+        analysis_columns = list(dict.fromkeys(["time_years", "Y_mace", score_column, *covariates]))
+
+        for level, subset in df.groupby(subgroup_column, observed=True, dropna=True):
+            complete_subset = (
+                subset[analysis_columns]
+                .replace([np.inf, -np.inf], np.nan)
+                .dropna()
+            )
+
+            events = int(complete_subset["Y_mace"].sum())
+
+            if events < minimum_events:
+                continue
+
+            if complete_subset[score_column].nunique(dropna=True) < 2:
+                continue
+
+            varying_covariates = [
+                c for c in covariates
+                if complete_subset[c].nunique(dropna=True) >= 2
+                and complete_subset[c].var(ddof=0) > 1e-12
+            ]
+            dropped_constant = [c for c in covariates if c not in varying_covariates]
+
+            result = train_cox_model(
+                complete_subset,
+                complete_subset,
+                selected_features=[score_column, *varying_covariates],
+                time_col="time_years",
+                event_col="Y_mace",
+                penalizer=penalizer,
+                verbose=False,
+                plot_km=False,
+            )
+
+            score_row = result["forest_df"].loc[
+                result["forest_df"]["covariate"] == score_column
+            ].iloc[0]
+
+            hr = float(score_row["hr"])
+            ci_low = float(score_row["ci_low"])
+            ci_high = float(score_row["ci_high"])
+            p_value = float(score_row["p_value"])
+
+            rows.append(
+                {
+                    "subgroup": subgroup_column,
+                    "level": str(level),
+                    "N": len(complete_subset),
+                    "events": events,
+                    "HR": hr,
+                    "HR_low": ci_low,
+                    "HR_high": ci_high,
+                    "p": p_value,
+                    "p_text": "<0.001" if p_value < 0.001 else f"{p_value:.3f}",
+                    "est_ci": f"{hr:.2f} ({ci_low:.2f}-{ci_high:.2f})",
+                    "adjusted_for": ", ".join(varying_covariates),
+                    "dropped_constant": ", ".join(dropped_constant),
+                }
+            )
+
+    forest_df = pd.DataFrame(rows)
+    if forest_df.empty:
+        raise ValueError("No subgroup level had enough events to fit a model.")
+
+    ax = fp.forestplot(
+        forest_df,
+        estimate="HR",
+        ll="HR_low",
+        hl="HR_high",
+        varlabel="level",
+        capitalize="capitalize",
+        groupvar="subgroup",
+        group_order=list(group_order) if group_order else list(dict.fromkeys(forest_df["subgroup"])),
+        annote=["N", "events", "est_ci"],
+        annoteheaders=["N", "Events", "HR (95% CI)"],
+        pval="p",
+        rightannote=["p_text"],
+        right_annoteheaders=["P-value"],
+        color_alt_rows=True,
+        sort=False,
+        flush=True,
+        table=table,
+        xlabel=xlabel or f"HR for {score_column} (95% CI)",
+        figsize=figsize or (10, max(4, len(forest_df) * 0.6)),
+    )
+    ax.axvline(1.0, color="black", linestyle="-", linewidth=0.8, alpha=0.8)
+    plt.tight_layout()
+
+    return {"forest_df": forest_df, "ax": ax}
