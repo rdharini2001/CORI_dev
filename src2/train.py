@@ -89,27 +89,28 @@ def train_cox_model(
     # xmin   = 0.4
     # xmax   = 2
     # xticks = np.linspace(0, 2, num=6).tolist()
-    fp.forestplot(
-        forest_df,
-        estimate="hr",
-        ll="ci_low",
-        hl="ci_high",
-        varlabel="label",
-        pval="p_value",
-        rightannote=["p_text"],
-        right_annoteheaders=["p-value"],
-        color_alt_rows=True,
-        # xlim=(xmin, xmax),
-        # xticks=xticks,
-        # ci_report=False,
-        flush=True,
-        xlabel="Hazard Ratio (95% CI)",
-        figsize=(12, max(3, len(forest_df) * 0.45)),
-    )
-
-    plt.axvline(1.0, color="black", linestyle="-", linewidth=0.8, alpha=0.8)
-    plt.tight_layout()
     if verbose:
+        fp.forestplot(
+            forest_df,
+            estimate="hr",
+            ll="ci_low",
+            hl="ci_high",
+            varlabel="label",
+            pval="p_value",
+            rightannote=["p_text"],
+            right_annoteheaders=["p-value"],
+            color_alt_rows=True,
+            # xlim=(xmin, xmax),
+            # xticks=xticks,
+            # ci_report=False,
+            flush=True,
+            xlabel="Hazard Ratio (95% CI)",
+            figsize=(12, max(3, len(forest_df) * 0.45)),
+        )
+
+        plt.axvline(1.0, color="black", linestyle="-", linewidth=0.8, alpha=0.8)
+        plt.tight_layout()
+
         plt.show()
     else:
         plt.close()
@@ -150,7 +151,7 @@ def do_multivar(
     verbose=True,
 ):
 
-    cph = CoxPHFitter(penalizer=0.01)
+    cph = CoxPHFitter(penalizer=0.1)
     cph.fit(
         df[[time_col, event_col] + selected_features],
         duration_col=time_col,
